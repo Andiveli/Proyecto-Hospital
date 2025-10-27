@@ -6,7 +6,7 @@ import proyecto.utilities.Validaciones;
 public class Main {
     public static void main(String[] args) {
         Hospital hp = new Hospital("Hospital POO");
-        String respuesta = Validaciones.validarString("Sistema de Gestión de Hospital. \\n" + "Iniciar? (si/no): ");
+        String respuesta = Validaciones.validarString("Sistema de Gestión de Hospital. \nIniciar? (si/no): ");
         menu(hp, respuesta);
     }
 
