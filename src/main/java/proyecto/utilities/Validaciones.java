@@ -10,16 +10,14 @@ public class Validaciones {
             System.out.print("Entrada invalida. \n" + mensaje);
             sc.next();
         }
-        return sc.nextInt();
+        int respuesta = sc.nextInt();
+        sc.nextLine();  // Limpiar el buffer
+        return respuesta;
     }
 
     public static String validarString(String mensaje) {
         System.out.print(mensaje);
-        while(!sc.hasNextLine()) {
-            System.out.print("Entrada invalida. \n" + mensaje);
-            sc.next();
-        }
-        return sc.nextLine();
+        return sc.nextLine().trim();
     }
 
     public static boolean validarSiNo(String mensaje) {
