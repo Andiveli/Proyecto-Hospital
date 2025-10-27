@@ -16,6 +16,11 @@ public class Medico extends Persona  {
         this.activo = activo;
     }
 
+    @Override
+    public String toString() {
+        return ", Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Género: " + genero + ", Especialidad: " + especialidad + ", Activo: " + (activo ? "Sí" : "No");
+    }
+
     public LocalDateTime getHorarioAtencion() {
         return horarioAtencion;
     }

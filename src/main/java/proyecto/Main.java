@@ -25,7 +25,7 @@ public class Main {
                     listarPacientes(hp);
                 }
                 case 4 -> {
-                    System.out.println("Listar Médicos");
+                    listarMedicos(hp);
                 }
                 case 5 -> {
                     System.out.println("Crear Cita Médica");
@@ -92,6 +92,27 @@ public class Main {
             }
             case 2 -> {
                 hp.listarPacientesAll();
+            }
+        }
+    }
+
+    private static void listarMedicos(Hospital hp) {
+        System.out.println("----Listar Médicos----");
+        int opcion = Validaciones.validarEntero("Listar por: \n1. Especialidad \n2. Genero. \n3. Activos \n4. Todos");
+        switch(opcion) {
+            case 1 -> {
+                String especialidad = Validaciones.validarString("Ingrese la especialidad: \n");
+                hp.listarMedicosPorEspecialidad(especialidad);
+            }
+            case 2 -> {
+                String genero = Validaciones.validarString("Ingrese el género: ");
+                hp.listarMedicosPorGenero(genero);
+            }
+            case 3 -> {
+                hp.listarMedicosActivos();
+            }
+            case 4 -> {
+                hp.listarMedicosAll();
             }
         }
     }

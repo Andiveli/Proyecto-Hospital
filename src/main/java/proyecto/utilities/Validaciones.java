@@ -11,7 +11,7 @@ public class Validaciones {
             sc.next();
         }
         int respuesta = sc.nextInt();
-        sc.nextLine();  // Limpiar el buffer
+        sc.nextLine();
         return respuesta;
     }
 

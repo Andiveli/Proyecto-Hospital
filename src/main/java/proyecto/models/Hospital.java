@@ -90,11 +90,40 @@ public class Hospital {
         System.out.println();
     }
 
-    public void registrarTratamiento(Tratamiento tratamiento) {
-        listaTratamientos.add(tratamiento);
+    public void listarMedicosPorEspecialidad(String especialidad) {
+        for(Medico m: listaMedicos) {
+            if(m.getEspecialidad().equalsIgnoreCase(especialidad)) {
+                System.out.println(m);
+            } else {
+                System.out.println("No hay médicos con esa especialidad.");
+            }
+        }
+        System.out.println();
     }
 
+    public void listarMedicosPorGenero(String genero) {
+        for(Medico m: listaMedicos) {
+            if(m.getGenero().equalsIgnoreCase(genero)) {
+                System.out.println(m);
+            }
+        }
+        System.out.println();
+    }
 
+    public void listarMedicosActivos() {
+        for(Medico m: listaMedicos) {
+            if(m.isActivo()) {
+                System.out.println(m);
+            }
+        }
+        System.out.println();
+    }
 
+    public void listarMedicosAll() {
+        for(Medico m: listaMedicos) {
+            System.out.println(m);
+        }
+        System.out.println();
+    }
 
 }
