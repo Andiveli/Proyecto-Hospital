@@ -17,7 +17,7 @@ public class Validaciones {
 
     public static String validarString(String mensaje) {
         System.out.print(mensaje);
-        return sc.nextLine().trim();
+        return sc.nextLine().trim(); //Determinar uso?
     }
 
     public static boolean validarSiNo(String mensaje) {
@@ -25,7 +25,7 @@ public class Validaciones {
         String respuesta = sc.nextLine();
         while(!respuesta.equalsIgnoreCase("si") && !respuesta.equalsIgnoreCase("no")) {
             System.out.print("Entrada invalida. \n" + mensaje);
-            respuesta = sc.nextLine();
+            respuesta = sc.nextLine(); //Este deberia ir al inicio
         }
         return respuesta.equalsIgnoreCase("si");
     }

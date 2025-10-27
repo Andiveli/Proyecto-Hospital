@@ -22,7 +22,7 @@ public class Cita {
         this.paciente = paciente;
         this.medico = medico;
         this.tratamientos = tratamientos;
-        this.estadoCita = EstadoCita.PROGRAMADA;
+        this.estadoCita = EstadoCita.PROGRAMADA; //Para que la cita, al ser creada, su estadoCita aparezca como "programada"
     }
 
     public int getCantidadTratamientos() {
@@ -39,7 +39,7 @@ public class Cita {
     }
 
     public void setTratamientos() {
-        System.out.println("Agregando Tratamiento");
+        System.out.println("Agregando Tratamiento"); //
     }
 
     public void cancelarCita() {
@@ -49,7 +49,7 @@ public class Cita {
     public double calcularTotal() {
         double total = 0.0;
         for (Tratamiento tratamiento : tratamientos) {
-            total += tratamiento.calcularCosto();
+            total += tratamiento.calcularCosto(); //Vease clase "tratamiento"
         }
         return total;
     }
