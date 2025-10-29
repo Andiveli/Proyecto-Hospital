@@ -1,5 +1,6 @@
 package proyecto.utilities;
 
+import java.time.LocalTime;
 import java.util.Scanner;
 
 public class Validaciones {
@@ -17,7 +18,17 @@ public class Validaciones {
 
     public static String validarString(String mensaje) {
         System.out.print(mensaje);
-        return sc.nextLine().trim();
+        return sc.nextLine().trim().toLowerCase();
+    }
+
+    public static String validarCorreo(String mensaje) {
+        System.out.print(mensaje);
+        String respuesta = sc.nextLine().trim();
+        while(!respuesta.contains("@") || !respuesta.contains(".")) {
+            System.out.print("Correo invalido. \n" + mensaje);
+            respuesta = sc.nextLine().trim();
+        }
+        return respuesta;
     }
 
     public static boolean validarSiNo(String mensaje) {
@@ -28,6 +39,25 @@ public class Validaciones {
             respuesta = sc.nextLine();
         }
         return respuesta.equalsIgnoreCase("si");
+    }
+
+    public static LocalTime validarHora(String mensaje) {
+        System.out.print(mensaje);
+        String respuesta = sc.nextLine();
+        while(!isHora(respuesta)) {
+            System.out.println("El formato de la hora es incorrecto. Recuerde (HH:mm): ");
+            respuesta = sc.nextLine();
+        }
+        return LocalTime.parse(respuesta);
+    }
+
+    private static boolean isHora(String respuesta) {
+        try {
+            LocalTime.parse(respuesta);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 

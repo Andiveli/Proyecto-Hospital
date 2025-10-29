@@ -13,20 +13,14 @@ public class Cita {
     private LocalDateTime fecha;
     private Paciente paciente;
     private Medico medico;
-    private ArrayList<Tratamiento> tratamientos;
     private EstadoCita estadoCita; 
 
-    public Cita(int idCita, LocalDateTime fecha, Paciente paciente, Medico medico, ArrayList<Tratamiento> tratamientos) {
+    public Cita(int idCita, LocalDateTime fecha, Paciente paciente, Medico medico) {
         this.idCita = idCita;
         this.fecha = fecha;
         this.paciente = paciente;
         this.medico = medico;
-        this.tratamientos = tratamientos;
         this.estadoCita = EstadoCita.PROGRAMADA;
-    }
-
-    public int getCantidadTratamientos() {
-        return tratamientos.size();
     }
     
     @Override
@@ -44,13 +38,5 @@ public class Cita {
 
     public void cancelarCita() {
         this.estadoCita = EstadoCita.CANCELADA;
-    }
-    
-    public double calcularTotal() {
-        double total = 0.0;
-        for (Tratamiento tratamiento : tratamientos) {
-            total += tratamiento.calcularCosto();
-        }
-        return total;
     }
 }

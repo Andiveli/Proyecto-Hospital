@@ -1,15 +1,15 @@
 package proyecto.models.users;
 
-import java.time.LocalDateTime;
+import proyecto.models.HorarioAtencion;
 
 public class Medico extends Persona  {
-    private LocalDateTime horarioAtencion;
+    private HorarioAtencion horarioAtencion;
     private String genero;
     private String especialidad;
     private boolean activo;
 
-    public Medico(int id, String nombre, String telefono, LocalDateTime horarioAtencion, String genero, String especialidad, boolean activo) {
-        super(id, nombre, telefono);
+    public Medico(int id, String nombre, String apellido, String correo, String telefono, HorarioAtencion horarioAtencion, String genero, String especialidad, boolean activo) {
+        super(id, nombre, apellido, correo, telefono);
         this.horarioAtencion = horarioAtencion;
         this.genero = genero;
         this.especialidad = especialidad;
@@ -21,11 +21,11 @@ public class Medico extends Persona  {
         return ", Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Género: " + genero + ", Especialidad: " + especialidad + ", Activo: " + (activo ? "Sí" : "No");
     }
 
-    public LocalDateTime getHorarioAtencion() {
+    public HorarioAtencion getHorarioAtencion() {
         return horarioAtencion;
     }
 
-    public void setHorarioAtencion(LocalDateTime horarioAtencion) {
+    public void setHorarioAtencion(HorarioAtencion horarioAtencion) {
         this.horarioAtencion = horarioAtencion;
     }
 

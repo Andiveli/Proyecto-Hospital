@@ -2,12 +2,14 @@ package proyecto.models.users;
 
 import java.util.ArrayList;
 
+import proyecto.enums.TipoSeguro;
+
 public class Paciente extends Persona {
-    private String tipoSeguro;
+    private TipoSeguro tipoSeguro;
     private ArrayList<String> historialCitas;
 
-    public Paciente(int id, String nombre, String telefono, String tipoSeguro) {
-        super(id, nombre, telefono);
+    public Paciente(int id, String nombre, String apellido, String correo, String telefono, TipoSeguro tipoSeguro) {
+        super(id, nombre, apellido, correo, telefono);
         this.tipoSeguro = tipoSeguro;
         this.historialCitas = new ArrayList<>();
     }
@@ -17,11 +19,11 @@ public class Paciente extends Persona {
         return "Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Tipo de Seguro: " + tipoSeguro;
     }
 
-    public String getTipoSeguro() {
+    public TipoSeguro getTipoSeguro() {
         return tipoSeguro;
     }
 
-    public void setTipoSeguro(String tipoSeguro) {
+    public void setTipoSeguro(TipoSeguro tipoSeguro) {
         this.tipoSeguro = tipoSeguro;
     }
 
@@ -32,6 +34,7 @@ public class Paciente extends Persona {
     public void setHistorialCitas(ArrayList<String> historialCitas) {
         this.historialCitas = historialCitas;
     }
+
 
    
 }

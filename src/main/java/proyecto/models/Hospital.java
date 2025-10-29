@@ -1,7 +1,11 @@
 package proyecto.models;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
+import proyecto.enums.TipoSeguro;
 import proyecto.models.tratamientos.Tratamiento;
 import proyecto.models.users.Medico;
 import proyecto.models.users.Paciente;
@@ -22,33 +26,37 @@ public class Hospital {
         this.listaCitas = new ArrayList<>();
         this.listaFacturas = new ArrayList<>();
     }
-    public boolean guardarPaciente(String nombre, String telefono, int seguro) {
+    public boolean guardarPaciente(String nombre, String apellido, String correo, String telefono, int seguro) {
         int id = listaPacientes.size() +1 ;
         boolean encontrado = listaPacientes.stream().anyMatch(p -> p.getNombre().equals(nombre));
         if(encontrado) {
             System.out.println("El paciente ya está registrado.");
             return false;
         }
-        String tipoSeguro;
-        switch(seguro) {
-            case 1 -> tipoSeguro = "basico";
-            case 2 -> tipoSeguro = "premium";
-            case 3 -> tipoSeguro = "vip";
-            default -> tipoSeguro = "basico";
+        TipoSeguro tipoSeguro;
+        switch (seguro) {
+            case 1 -> {
+                tipoSeguro = TipoSeguro.IESS;
+            }
+            case 2-> {
+                tipoSeguro = TipoSeguro.PRIVADO;
+            }
+            default -> tipoSeguro = TipoSeguro.IESS;
+
         }
-        Paciente nuevoPaciente = new Paciente(id, nombre, telefono, tipoSeguro);
+        Paciente nuevoPaciente = new Paciente(id, nombre, apellido, correo, telefono, tipoSeguro);
         listaPacientes.add(nuevoPaciente);
         return true;
     }
-    
-    public boolean guardarMedico(String nombre, String telefono, String genero, String especialidad, boolean activo) {
+
+    public boolean guardarMedico(String nombre, String apellido, String correo, String telefono, String genero, String especialidad, boolean activo, HorarioAtencion horario) {
         int id = listaMedicos.size() + 1;
         boolean encontrado = listaMedicos.stream().anyMatch(p -> p.getNombre().equals(nombre));
         if(encontrado) {
             System.out.println("El médico ya está registrado.");
             return false;
         } else {
-            Medico medico = new Medico(id, nombre, telefono, null, genero, especialidad, activo);
+            Medico medico = new Medico(id, nombre, apellido, correo, telefono, horario, genero, especialidad, activo);
             listaMedicos.add(medico);
             return true;
         }
@@ -58,7 +66,7 @@ public class Hospital {
         switch (filtro) {
             case 1 -> {
                 for(Paciente p: listaPacientes) {
-                    if(p.getTipoSeguro().equalsIgnoreCase("basico")) {
+                    if(p.getTipoSeguro() == TipoSeguro.IESS) {
                         System.out.println(p);
                     }
                 }
@@ -66,15 +74,7 @@ public class Hospital {
             }
             case 2 -> {
                 for(Paciente p: listaPacientes) {
-                    if(p.getTipoSeguro().equalsIgnoreCase("premium")) {
-                        System.out.println(p);
-                    }
-                }
-                System.out.println();
-            }
-            case 3 -> {
-                for(Paciente p: listaPacientes) {
-                    if(p.getTipoSeguro().equalsIgnoreCase("vip")) {
+                    if(p.getTipoSeguro() == TipoSeguro.PRIVADO) {
                         System.out.println(p);
                     }
                 }
@@ -126,4 +126,36 @@ public class Hospital {
         System.out.println();
     }
 
+    public void buscarHorarios(String nombre) {
+        for(Medico m: listaMedicos) {
+            if(m.getNombre().equals(nombre)) {
+                System.out.println(m.getHorarioAtencion());
+            } else {
+                System.out.println("El médico no existe");
+            }
+        }
+
+    }
+    
+    public HorarioAtencion crearHorario(String dias, LocalTime inicio, LocalTime fin) {
+        EnumSet<DayOfWeek> diasHorario = EnumSet.noneOf(DayOfWeek.class);
+
+        try {
+            for(String dia: dias.split(",")) {
+                diasHorario.add(DayOfWeek.valueOf(dia));
+            }
+
+            if(!fin.isAfter(inicio)) {
+                throw new IllegalArgumentException("La hora de inicio debe ser antes que la hora de fin");
+            }
+
+            return new HorarioAtencion(inicio, fin, diasHorario);
+        } catch(IllegalArgumentException e) {
+            System.out.println("Error en los datos: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+        }
+
+        return null;
+    }
 }
