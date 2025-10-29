@@ -36,7 +36,7 @@ public class Validaciones {
         String respuesta = sc.nextLine();
         while(!respuesta.equalsIgnoreCase("si") && !respuesta.equalsIgnoreCase("no")) {
             System.out.print("Entrada invalida. \n" + mensaje);
-            respuesta = sc.nextLine();
+            respuesta = sc.nextLine(); //Este deberia ir al inicio
         }
         return respuesta.equalsIgnoreCase("si");
     }

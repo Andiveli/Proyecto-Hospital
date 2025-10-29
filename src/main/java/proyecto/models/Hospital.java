@@ -26,10 +26,11 @@ public class Hospital {
         this.listaCitas = new ArrayList<>();
         this.listaFacturas = new ArrayList<>();
     }
+
     public boolean guardarPaciente(String nombre, String apellido, String correo, String telefono, int seguro) {
-        int id = listaPacientes.size() +1 ;
-        boolean encontrado = listaPacientes.stream().anyMatch(p -> p.getNombre().equals(nombre));
-        if(encontrado) {
+        int id = listaPacientes.size() +1 ; //El id va conforme a su orden de registro. El primero es 1, elsegundo, 2; etc.
+        boolean encontrado = listaPacientes.stream().anyMatch(p -> p.getNombre().equals(nombre)); //.stream() transforma la lista a un dato tipo stream                                                                                           
+        if(encontrado) {                                               //Con stream, podemos acceder a anyMatch(), que devuelve 'true' si encuentra al menor uno con la condicion dentro de ella
             System.out.println("El paciente ya está registrado.");
             return false;
         }

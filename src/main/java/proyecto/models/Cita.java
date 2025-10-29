@@ -1,10 +1,8 @@
 package proyecto.models;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import proyecto.enums.EstadoCita;
-import proyecto.models.tratamientos.Tratamiento;
 import proyecto.models.users.Medico;
 import proyecto.models.users.Paciente;
 
@@ -21,6 +19,7 @@ public class Cita {
         this.paciente = paciente;
         this.medico = medico;
         this.estadoCita = EstadoCita.PROGRAMADA;
+        this.estadoCita = EstadoCita.PROGRAMADA; //Para que la cita, al ser creada, su estadoCita aparezca como "programada"
     }
     
     @Override
@@ -33,7 +32,7 @@ public class Cita {
     }
 
     public void setTratamientos() {
-        System.out.println("Agregando Tratamiento");
+        System.out.println("Agregando Tratamiento"); //
     }
 
     public void cancelarCita() {
