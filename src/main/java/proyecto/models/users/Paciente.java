@@ -13,12 +13,21 @@ public class Paciente extends Persona {
         this.tipoSeguro = tipoSeguro;
         this.historialCitas = new ArrayList<>();
     }
+    
+    // El siguiente constructor es para clonar objetos sin que, cuando cambies uno, se cambien los dos
+    public Paciente(Paciente copia){
+        super(copia);
+        this.tipoSeguro = copia.tipoSeguro;
+        this.historialCitas = new ArrayList<>();
+    }
+    
+    
 
     @Override
     public String toString() {
-        return "Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Tipo de Seguro: " + tipoSeguro;
+        return "Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Tipo de Seguro: " + tipoSeguro + ", Correo: " + getCorreo();              
     }
-
+    
     public TipoSeguro getTipoSeguro() {
         return tipoSeguro;
     }

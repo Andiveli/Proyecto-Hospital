@@ -22,9 +22,21 @@ public class Cita {
         this.estadoCita = EstadoCita.PROGRAMADA; //Para que la cita, al ser creada, su estadoCita aparezca como "programada"
     }
     
+    // El siguiente constructor es para clonar objetos sin que, cuando cambies uno, se cambien los dos
+    public Cita(Cita copia){
+       this.idCita = copia.idCita;
+       this.fecha = copia.fecha;
+       this.paciente = copia.paciente;
+       this.medico = copia.medico;
+       this.estadoCita = EstadoCita.PROGRAMADA;
+       this.estadoCita = EstadoCita.PROGRAMADA; //Para que la cita, al ser creada, su estadoCita aparezca como "programada"
+    } 
+    
+            
+    
     @Override
     public String toString() {
-        return "Cita ID: " + idCita + "\nFecha: " + fecha + "\nPaciente: " + paciente.getNombre() + "\nEstado: " + estadoCita + "\nMedico: " + medico.getNombre();
+        return "Cita ID: " + idCita + "\nFecha: " + fecha + "\nPaciente: " + paciente.getNombre() + "\nCorreo del paciente: " + paciente.getCorreo() + "\nEstado: " + estadoCita + "\nMedico: " + medico.getNombre() + "\nCorreo del Medico: " + medico.getCorreo();
     }
 
     public void marcarComoPagado() {
@@ -38,4 +50,13 @@ public class Cita {
     public void cancelarCita() {
         this.estadoCita = EstadoCita.CANCELADA;
     }
+    
+    public LocalDateTime getFecha(){
+        return fecha;
+    }
+    
+    public Medico getMedico(){
+        return medico;
+    }
+   
 }

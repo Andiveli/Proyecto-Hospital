@@ -159,4 +159,17 @@ public class Hospital {
 
         return null;
     }
+    
+    public ArrayList<Paciente> getListaPacientes(){ ////////
+        return listaPacientes;
+    }
+    
+    public ArrayList<Medico> getListaMedicos(){ ////////
+        return listaMedicos;
+    }
+    
+    public ArrayList<Cita> getListaCitas(){
+        return listaCitas;
+    }
+    
 }

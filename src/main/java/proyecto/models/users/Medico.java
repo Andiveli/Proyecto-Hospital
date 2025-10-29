@@ -15,10 +15,20 @@ public class Medico extends Persona  {
         this.especialidad = especialidad;
         this.activo = activo;
     }
+    
+    // El siguiente constructor es para clonar objetos sin que, cuando cambies uno, se cambien los dos
+    public Medico(Medico copia){
+        super(copia);
+        this.horarioAtencion = copia.horarioAtencion;
+        this.genero = copia.genero;
+        this.especialidad = copia.especialidad;
+        this.activo = copia.activo;
+    }
+    
 
     @Override
     public String toString() {
-        return ", Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + ", Género: " + genero + ", Especialidad: " + especialidad + ", Activo: " + (activo ? "Sí" : "No");
+        return ", Nombre: " + getNombre() + ", Teléfono: " + getTelefono() + " , Correo: " + getCorreo() + ", Género: " + genero + ", Horario de atencion: " + horarioAtencion.getHorarioInicio() + "-" + horarioAtencion.getHorarioFin() + ", Especialidad: " + especialidad + ", Activo: " + (activo ? "Sí" : "No");
     }
 
     public HorarioAtencion getHorarioAtencion() {
@@ -64,6 +74,8 @@ public class Medico extends Persona  {
     public void registrarTurno() {
         System.out.println("Turno registrado para el médico: " + getNombre());
     }
+    
+    
 
 
     

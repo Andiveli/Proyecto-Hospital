@@ -14,6 +14,15 @@ public class Persona {
         this.correo = correo;
         this.telefono = telefono;
     }
+    
+    public Persona(Persona copia){
+        // El siguiente constructor es para clonar objetos sin que, cuando cambies uno, se cambien los dos
+        this.id = copia.id;
+        this.nombre = copia.nombre;
+        this.apellido = copia.apellido;
+        this.correo = copia.correo;
+        this.telefono = copia.telefono;
+    }
 
     public int getId() {
         return id;

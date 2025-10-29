@@ -7,7 +7,7 @@ import java.util.EnumSet;
 public class HorarioAtencion {
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private EnumSet<DayOfWeek> dias;
+    private EnumSet<DayOfWeek> dias; 
     private int duracionCita;
     
     public HorarioAtencion(LocalTime horaInicio, LocalTime horaFin, EnumSet<DayOfWeek> dias) {
@@ -15,5 +15,13 @@ public class HorarioAtencion {
         this.horaFin = horaFin;
         this.dias = dias;
         this.duracionCita = 60;
+    }
+    
+    public LocalTime getHorarioInicio(){
+        return horaInicio;
+    }
+    
+    public LocalTime getHorarioFin(){
+        return horaFin;
     }
 }
