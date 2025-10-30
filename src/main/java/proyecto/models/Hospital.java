@@ -126,6 +126,14 @@ public class Hospital {
         }
         System.out.println();
     }
+    
+    // Listar citas
+    public void listarCitasAll() {
+        for(Cita c: listaCitas) {
+            System.out.println(c);
+        }
+        System.out.println();
+    }
 
     public void buscarHorarios(String nombre) {
         for(Medico m: listaMedicos) {

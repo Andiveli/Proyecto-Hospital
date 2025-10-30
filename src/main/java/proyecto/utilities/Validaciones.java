@@ -214,6 +214,15 @@ public class Validaciones {
         return true; // Si jamas pasa lo de arriba, llega a retornar true
     }
     
+   
+    // el siguiente VALIDAR SE USO EN LA SECCION MODIFICAR CITAS
+    
+    public static boolean validarCambioHoraCita(LocalTime newHoraCita, Medico medico){
+        LocalTime medicoHoraInicio = medico.getHorarioAtencion().getHorarioInicio();
+        LocalTime medicoHoraFin = medico.getHorarioAtencion().getHorarioFin();
+        return !( (newHoraCita.isBefore(medicoHoraInicio)) ||  (newHoraCita.isAfter(medicoHoraFin)) );
+        
+    }
     
     
 

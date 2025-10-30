@@ -3,6 +3,7 @@ package proyecto.models;
 import java.time.LocalDateTime;
 
 import proyecto.enums.EstadoCita;
+import proyecto.models.tratamientos.Tratamiento;
 import proyecto.models.users.Medico;
 import proyecto.models.users.Paciente;
 
@@ -12,7 +13,7 @@ public class Cita {
     private Paciente paciente;
     private Medico medico;
     private EstadoCita estadoCita; 
-
+   
     public Cita(int idCita, LocalDateTime fecha, Paciente paciente, Medico medico) {
         this.idCita = idCita;
         this.fecha = fecha;
@@ -42,11 +43,9 @@ public class Cita {
     public void marcarComoPagado() {
         this.estadoCita = EstadoCita.ATENDIDA;
     }
-
-    public void setTratamientos() {
-        System.out.println("Agregando Tratamiento"); //
-    }
-
+  
+    
+    
     public void cancelarCita() {
         this.estadoCita = EstadoCita.CANCELADA;
     }
@@ -55,8 +54,24 @@ public class Cita {
         return fecha;
     }
     
+    public void setFecha(LocalDateTime fecha){
+        this.fecha = fecha;
+    }
+    
     public Medico getMedico(){
         return medico;
     }
+    public void setMedico(Medico medico){
+        this.medico = medico;
+    }
+    
+    public void setPaciente(Paciente paciente){
+        this.paciente = paciente;
+    }
+    
+    public void setEstado(EstadoCita estadoCita){
+        this.estadoCita = estadoCita;
+    }
+    
    
 }

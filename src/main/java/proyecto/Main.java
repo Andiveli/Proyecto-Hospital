@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.EnumSet;
+import proyecto.enums.EstadoCita;
 import static proyecto.enums.TipoSeguro.IESS;
 import proyecto.models.Cita;
 
@@ -28,7 +29,29 @@ public class Main {
         menu(hp);
     }
 
-    private static void menu(Hospital hp) {
+    private static void menu(Hospital hp){
+        
+        LocalTime PruebaInicio = LocalTime.of(13, 00);    
+        LocalTime PruebaFin = LocalTime.of(14, 00); 
+        HorarioAtencion horarioPrueba1 = new HorarioAtencion(PruebaInicio, PruebaFin, EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.SATURDAY));
+        Medico medPrueba1 = new Medico(1, "Maria", "Mama", "maricarmen@gmail.com", "0932193921", horarioPrueba1, "Femenino", "Cirujana", true);
+        hp.getListaMedicos().add(medPrueba1);
+        
+        
+        LocalTime PruebaInicio2 = LocalTime.of(15, 00);    
+        LocalTime PruebaFin2 = LocalTime.of(16, 00); 
+        HorarioAtencion horarioPrueba2 = new HorarioAtencion(PruebaInicio2, PruebaFin2, EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.SATURDAY));
+        Medico medPrueba2 = new Medico(2, "Pedro", "Martinez", "pemar@gmail.com", "093219432421", horarioPrueba2, "Masculino", "Carnicero", true);
+        hp.getListaMedicos().add(medPrueba2);
+           
+        LocalTime PruebaInicio3 = LocalTime.of(17, 00);    
+        LocalTime PruebaFin3 = LocalTime.of(18, 00); 
+        HorarioAtencion horarioPrueba3 = new HorarioAtencion(PruebaInicio3, PruebaFin3, EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.SATURDAY));
+        Medico medPrueba3 = new Medico(3, "Juana", "De arco", "juana@gmail.com", "0932132132421", horarioPrueba3, "Femenino", "Oftamnologa", true);
+        hp.getListaMedicos().add(medPrueba3);
+        
+        
+        
         String respuesta = "si";
         do {
             System.out.println("\n----Menú Principal----");
@@ -50,8 +73,9 @@ public class Main {
                     crearCitaMedica(hp);
                 }
                 case 6 -> {
-                    System.out.println("Modificar o cancelar cita");
+                    modificarCitaMedica(hp);
                 }
+                
                 case 7 -> {
                     System.out.println("Registrar Tratamientos para un paciente");
                 }
@@ -168,9 +192,10 @@ public class Main {
                 for (int i=0; i< hp.getListaPacientes().size(); i++){ 
                     Paciente pacienteCitaFor = new Paciente(hp.getListaPacientes().get(i)); //Obtenemos el i-esimo paciente
                     if (pacienteCitaFor.getCorreo().equals(correoPaciente)){
-                        pacienteCita = new Paciente(pacienteCitaFor); //El for acaba apenas encuentre que el correo de uno de los de las listas es igual al ingresado
+                        pacienteCita = new Paciente(pacienteCitaFor); 
+                        break; //El for acaba apenas encuentre que el correo de uno de los de las listas es igual al ingresado
+                    }
                 }
-            }
             }
         }
         while(!validarPacienteCita(correoPaciente, hp.getListaPacientes(), pacienteCita)); //El while termina apenas encuentre un correo valido
@@ -222,6 +247,8 @@ public class Main {
         
         
         //REGISTRO MEDICO
+        
+        
       
         
         String correoMedico;
@@ -297,6 +324,234 @@ public class Main {
         System.out.println(citaCreada);
         
     }
+    
+    
+    
+    private static void modificarCitaMedica(Hospital hp){
+        System.out.println("Lita de citas:");
+        hp.listarCitasAll();
+        int indice = validarEntero("Seleccione el ID de la cita a modificar: ");
+        indice -= 1; // Los ID's empiezan desde 1. El indice en un array, desde 0
+        System.out.println("Seleccione la accion a realizar: ");
+        
+        int opcion;
+        
+        // Menu
+        do{
+            opcion = Validaciones.validarEntero("1. Modificar fecha "
+                                                + "\n2. Modificar paciente"
+                                                + "\n3. Modificar medico"
+                                                + "\n4. Modificar estado");
+            if ( !((opcion >= 1) && (opcion <= 4)) ){
+                System.out.println("");
+                System.out.println("Ingreso no valido.");
+                System.out.println("#####################"); //Si no selecciona un numero entre 1 y 4
+            }
+        }
+        while( !((opcion >= 1) && (opcion <= 4)) );   
+        
+        Cita citaCambiar = hp.getListaCitas().get(indice); //Indice es la posicion de la cita
+        
+        switch(opcion){
+            // Modificar fecha
+            case 1:
+                int newAnioCita;
+                do{
+                    newAnioCita = validarEntero("Año de la cita: ");
+                    if (newAnioCita <= 0){
+                        System.out.println("Entrada invalida.");
+                    }
+                }
+                while(newAnioCita <= 0);
+                //mes
+                int newMesCita;
+                do{
+                    newMesCita = validarEntero("Mes de la cita: ");
+                    if ((newMesCita <= 0)||(newMesCita > 12)){
+                        System.out.println("Entrada invalida.");
+                    }
+            
+                }
+                while((newMesCita <= 0)||(newMesCita > 12));
+        
+                //dia
+                int newDiaCita;
+                do{
+                    newDiaCita = validarEntero("Dia de la cita: ");
+                    if (!validarDia(newDiaCita, newMesCita)){ // Vease validarDia en clase 'Validaciones;
+                        System.out.println("Ingreso no valido");
+                    }
+                }
+                while(!validarDia(newDiaCita, newMesCita));
+                //fecha
+                LocalDate newYmdCita = LocalDate.of(newAnioCita, newMesCita, newDiaCita); // Crear anio, mes, dia
+                //hora
+                LocalTime newHoraCita = validarHora("Horario de la cita, formato HH:MM ");
+                
+                
+                //VERIFICAR QUE EL CAMBIO DE CITA COINCIDA CON EL HORARIO DEL MEDICO:
+                Medico medicoNewCita = hp.getListaCitas().get(indice).getMedico();
+                
+        
+                //Asignacion
+                LocalDateTime newFechaCita = LocalDateTime.of(newYmdCita, newHoraCita); // Crear fecha nueva
+               
+                citaCambiar.setFecha(newFechaCita);
+                
+                System.out.print("Fecha modificada exitosamente!");
+                System.out.print("Nueva fecha: " + newFechaCita);
+                System.out.print("La cita ahora es: " + hp.getListaCitas().get(indice));
+                break;
+                
+            case 2:
+                // Modificar  paciente 
+                String newCorreoPaciente;
+                Paciente newPacienteCita = null;
+                do{
+                    System.out.println("Pacientes registrados: ");
+                    hp.listarPacientesAll();
+                    newCorreoPaciente = Validaciones.validarString("Ingrese el correo del paciente a añadir: ");
+            
+                    if (!validarPacienteCita(newCorreoPaciente, hp.getListaPacientes(), newPacienteCita)){ //Parametros: correo ingresado, lista de pacientes del hospital
+                        System.out.println("");                                        //hp.getListaPacientes() obtiene la lista de pacientes
+                        System.out.println("Correo de paciente no encontrado");
+                        System.out.println("##########################################");
+                    }
+                    else{
+                        // Asignacion de variable pacienteCita:
+                        for (int i=0; i< hp.getListaPacientes().size(); i++){ 
+                            Paciente pacienteCitaFor = new Paciente(hp.getListaPacientes().get(i)); //Obtenemos el i-esimo paciente
+                            if (pacienteCitaFor.getCorreo().equals(newCorreoPaciente)){
+                                newPacienteCita = new Paciente(pacienteCitaFor);
+                                break; //El for acaba apenas encuentre que el correo de uno de los de las listas es igual al ingresado
+                            }
+                        }
+                    }
+                }
+                while(!validarPacienteCita(newCorreoPaciente, hp.getListaPacientes(), newPacienteCita));
+                
+                // Asignacion
+                
+                citaCambiar.setPaciente(newPacienteCita);
+                
+                System.out.print("Paciente modificado exitosamente!");
+                System.out.print("Nuevo paciente: " + newPacienteCita);
+                System.out.print("La cita ahora es: " + hp.getListaCitas().get(indice));
+                break;
+                
+            case 3:
+                // Modificar medico
+                String newCorreoMedico;
+                Medico newMedicoCita = null;
+                boolean validarNewMedico = false;  //Se iguala con validarMedicoHorarioCita()
+                do{
+            
+                    System.out.println("Médicos registrados: ");
+                    hp.listarMedicosAll();
+                    newCorreoMedico = Validaciones.validarString("Ingrese el correo del medico a añadir: ");
+            
+                    //Validacion correo
+            
+                    if (!validarMedicoCorreoCita(newCorreoMedico, hp.getListaMedicos())){ //Validacion de correo existente
+                        System.out.println("");                        //hp.getListaMedico() obtiene la lista de medicos
+                        System.out.println("Correo de medico no encontrado");
+                        System.out.println("#################################");
+                    }
+           
+                    else {
+                        for (int i=0; i<hp.getListaMedicos().size(); i++){ 
+                            //Note que, a partir de este punto, medicoCita ya tiene un medico asignado. Se le asigna el medico con el correo encontrado
+                            Medico medicoCitaFor = new Medico(hp.getListaMedicos().get(i)); 
+                            if (medicoCitaFor.getCorreo().equals(newCorreoMedico)){
+                                newMedicoCita = new Medico(medicoCitaFor);
+                            }
+                   
+                        }
+               
+                
+                        if (!newMedicoCita.isActivo()){
+                        System.out.println("");                       
+                        System.out.println("El medico no se encuentra activo en este momento.");
+                        System.out.println("################################################");
+                    }
+
+
+                    
+                
+                        //Validacion de disponibilidad:
+                
+                        LocalTime medicoHoraInicio = newMedicoCita.getHorarioAtencion().getHorarioInicio(); //Del medico asignado a la cita, obtengo su horario y, del horario, obtengo hora de inicio
+                        LocalTime medicoHoraFin = newMedicoCita.getHorarioAtencion().getHorarioFin();
+                        
+                        LocalTime horaCita = citaCambiar.getFecha().toLocalTime(); //Obtenemos la hora de la fecha
+                        LocalDate ymdCita = citaCambiar.getFecha().toLocalDate(); //Obtenemos la fecha de la cita 
+                        if( !(validarMedicoHorarioCita(horaCita, medicoHoraInicio, medicoHoraFin)) ){ //Desigualdades para LocalTime
+                            System.out.println(""); //Validacion de horario 
+                            System.out.println("El medico no tiene horario disponible para la cita.");
+                            System.out.println("");
+                        }
+                        else{
+                            // Validacion de no tener una cita a la misma fecha y hora   
+                            if( !validarMedicoDispoCita(hp.getListaCitas(), newMedicoCita.getCorreo(), ymdCita) ){ //Desigualdades para LocalTime
+                                    System.out.println(""); //Validacion de horario 
+                                    System.out.println("El medico tiene una cita en ese horario.");
+                                    System.out.println("");
+                            
+                                }
+                            else{
+                                validarNewMedico = true; // Se cumplen todas las condiciones para validar Medico.
+                            }
+                        }
+                
+                    }
+            
+                }
+                while( !validarNewMedico ); //El while termina
+                
+
+                //Asignacion 
+                citaCambiar.setMedico(newMedicoCita);
+                
+                System.out.print("Paciente modificado exitosamente!");
+                System.out.print("Nuevo paciente: " + newMedicoCita);
+                System.out.print("La cita ahora es: " + hp.getListaCitas().get(indice));
+                break;
+               
+            case 4:
+                int indice2;
+                do{
+                    System.out.println("Elija el nuevo estado de su cita");
+                    indice2 = validarEntero("1. PROGRAMADA \n2. CANCELADA \n3. ATENDIDA");
+                    if ( !((indice2 >= 1) && (indice2 <= 3)) ){
+                        System.out.println("");
+                        System.out.println("Ingreso no valido");
+                        System.out.println("##########");
+                    }
+                }
+                while( !((indice2 >= 1) && (indice2 <= 3)) );
+                
+                switch(indice2){
+                    case 1:
+                        citaCambiar.setEstado(EstadoCita.PROGRAMADA);
+                        System.out.println("El estado de su cita ha cambiado a PROGRAMADA.");
+                        System.out.print("La cita ahora es: " + citaCambiar);
+                        break;
+                    case 2: 
+                        citaCambiar.setEstado(EstadoCita.CANCELADA);
+                        System.out.println("El estado de su cita ha cambiado a CANCELADA.");
+                        System.out.print("La cita ahora es: " + citaCambiar);
+                        break;
+                    case 3: 
+                        citaCambiar.setEstado(EstadoCita.ATENDIDA);
+                        System.out.println("El estado de su cita ha cambiado a ATENDIDA.");
+                        System.out.print("La cita ahora es: " + citaCambiar);
+                        break;
+                }       
+        }
+    }
+    
+    
+    
 
    
 }
