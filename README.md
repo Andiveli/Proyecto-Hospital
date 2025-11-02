@@ -34,9 +34,9 @@ Simula un entorno hospitalario donde se pueden registrar médicos, pacientes, ci
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/Andiveli/Proyecto-Hospital.git
-cd Proyecto-Hospital
-mvn clean install
-mvn exec:java -Dexec.mainClass="proyecto.Main"
+   cd Proyecto-Hospital
+   mvn clean install
+   mvn exec:java -Dexec.mainClass="proyecto.Main"
 
 ---
 ## 🧪 Pruebas y validaciones
