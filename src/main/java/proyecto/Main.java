@@ -1,64 +1,72 @@
 package proyecto;
 
 import java.time.LocalTime;
-
 import java.util.List;
+import proyecto.exceptions.ArchivoException;
+import proyecto.exceptions.CitaNoDisponibleException;
+import proyecto.exceptions.DatoInvalidoException;
+import proyecto.exceptions.MedicoNoEncontradoException;
+import proyecto.exceptions.PacienteNoEncontradoException;
 import proyecto.models.HorarioAtencion;
 import proyecto.models.Hospital;
 import proyecto.utilities.Validaciones;
 
 public class Main {
     public static void main(String[] args) {
-        Hospital hp = new Hospital("Hospital POO");
-        System.out.println("Sistema de Gestión de Hospital.");
-        menu(hp);
+        try {
+            Hospital hp = new Hospital("Hospital POO");
+            System.out.println("Sistema de Gestión de Hospital.");
+            menu(hp);
+        } catch (ArchivoException e) {
+            System.err.println("ERROR CRÍTICO: No se pudo inicializar el sistema");
+            System.err.println("Causa: " + e.getMessage());
+            System.err.println("Solución: Verifique permisos de archivos y espacio en disco");
+            System.exit(1);
+        } catch (Exception e) {
+            System.err.println("ERROR INESPERADO: Falla al iniciar el sistema");
+            System.err.println("Causa: " + e.getMessage());
+            System.err.println("Solución: Reinicie el sistema o contacte al administrador");
+            System.exit(1);
+        }
     }
 
     private static void menu(Hospital hp) {
         String respuesta = "si";
         do {
-            System.out.println("\n----Menú Principal----");
-            int opcion = Validaciones.validarEntero("1. Registrar Paciente. \n2. Registrar Médico. \n3. Listar Pacientes. \n4. Listar Médicos. \n5. Crear Cita Médica. \n6. Modificar o cancelar cita. \n7. Registrar Tratamientos para un paciente. \n8. Marcar cita atendida. \n9. Reportes \n10. Salir. \n");
-            switch(opcion) {
-                case 1 -> {
-                    registrarPaciente(hp);
+            try {
+                System.out.println("\n----Menú Principal----");
+                int opcion = Validaciones.validarEntero(
+                        "1. Registrar Paciente. \n2. Registrar Médico. \n3. Listar Pacientes. \n4. Listar Médicos. \n5. Crear Cita Médica. \n6. Modificar o cancelar cita. \n7. Registrar Tratamientos para un paciente. \n8. Marcar cita atendida. \n9. Reportes \n10. Salir. \n");
+                switch (opcion) {
+                    case 1 -> registrarPaciente(hp);
+                    case 2 -> registrarMedico(hp);
+                    case 3 -> listarPacientes(hp);
+                    case 4 -> listarMedicos(hp);
+                    case 5 -> crearCitaMedica(hp);
+                    case 6 -> editarCitaMedica(hp);
+                    case 7 -> registrarTratamientos(hp);
+                    case 8 -> citaAtendida(hp);
+                    case 9 -> reporte(hp);
+                    default -> {
+                        System.out.println("Saliendo del sistema...");
+                        respuesta = "no";
+                    }
                 }
-                case 2 -> {
-                    registrarMedico(hp);
-                }
-                case 3 -> {
-                    listarPacientes(hp);
-                }
-                case 4 -> {
-                    listarMedicos(hp);
-                }
-                case 5 -> {
-                    crearCitaMedica(hp);
-                }
-                case 6 -> {
-                    editarCitaMedica(hp);
-                }
-                case 7 -> {
-                    registrarTratamientos(hp);
-                }
-                case 8 -> {
-                    citaAtendida(hp);
-                }
-                case 9 -> {
-                    reporte(hp);
-                }
-                default -> {
-                    System.out.println("Saliendo del sistema...");
-                    respuesta = "no";
-                }
+            } catch (DatoInvalidoException e) {
+                System.out.println("ERROR: " + e.getMessage());
+                System.out.println("Sugerencia: Revise los datos ingresados e intente nuevamente.");
+            } catch (Exception e) {
+                System.out.println("ERROR INESPERADO: " + e.getMessage());
+                System.out.println("Sugerencia: Reinicie la operación o contacte al administrador.");
             }
         } while (respuesta.equalsIgnoreCase("si"));
     }
 
     private static void reporte(Hospital hp) {
         System.out.println("----Reportes----");
-        int opcion = Validaciones.validarEntero("Seleccione el reporte que desea generar: \n1. Citas atendidas por especialidad. \n2. Ingresos totales por tratamientos. \n3. Historial de tratamientos por paciente. \n");
-        switch(opcion) {
+        int opcion = Validaciones.validarEntero(
+                "Seleccione el reporte que desea generar: \n1. Citas atendidas por especialidad. \n2. Ingresos totales por tratamientos. \n3. Historial de tratamientos por paciente. \n");
+        switch (opcion) {
             case 1 -> {
                 listarCitasAtendidasPorEspecialidad(hp);
             }
@@ -73,46 +81,69 @@ public class Main {
     }
 
     private static void registrarPaciente(Hospital hp) {
-        System.out.println("\n\n----Registrar Paciente----");
-        String nombre = Validaciones.validarString("Nombre: ");
-        String apellido = Validaciones.validarString("Apellido: ");
-        String correo = Validaciones.validarCorreo("Correo: ");
-        String cedula = Validaciones.validarString("Cédula: ");
-        int tipoSeguro = Validaciones.validarEntero("Tipo de Seguro (1. IESS. 2. PRIVADO): ");
-        boolean resultado = hp.guardarPaciente(nombre, apellido, correo, cedula, tipoSeguro);
-        if(resultado) {
-            System.out.println("\nPaciente registrado exitosamente. \n");
-        } else {
-            System.out.println("\nError al registrar el paciente. \n");
+        try {
+            System.out.println("\n\n----Registrar Paciente----");
+            String nombre = Validaciones.validarString("Nombre: ");
+            String apellido = Validaciones.validarString("Apellido: ");
+            String correo = Validaciones.validarCorreo("Correo: ");
+            String cedula = Validaciones.validarString("Cédula: ");
+            int tipoSeguro = Validaciones.validarEntero("Tipo de Seguro (1. IESS. 2. PRIVADO): ");
+            boolean resultado = hp.guardarPaciente(nombre, apellido, correo, cedula, tipoSeguro);
+            if (resultado) {
+                System.out.println("\nPaciente registrado exitosamente. \n");
+            } else {
+                System.out.println("\nError al registrar el paciente. \n");
+            }
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique los datos ingresados e intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura y espacio en disco.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación o contacte al administrador.");
         }
     }
 
     private static void registrarMedico(Hospital hp) {
-        System.out.println("\n\n----Registrar Medico----");
-        String nombre = Validaciones.validarString("Nombre: ");
-        String apellido = Validaciones.validarString("Apellido: ");
-        String correo = Validaciones.validarCorreo("Correo: ");
-        String cedula = Validaciones.validarString("Cédula: ");
-        String genero = Validaciones.validarString("Género: ");
-        String especialidad = Validaciones.validarString("Especialidad: ");
-        System.out.println("-----Horarios de Atención");
-        String dias = Validaciones.validarString("Ingrese los días de atención (separados por coma (,)): ");
-        LocalTime horaInicio = Validaciones.validarHora("Ingrese la hora de inicio (HH:mm): ");
-        LocalTime horaFin = Validaciones.validarHora("Ingrese hasta que hora atiende (HH:mm): ");
-        HorarioAtencion horario = hp.crearHorario(dias, horaInicio, horaFin);
-        boolean activo = Validaciones.validarSiNo("¿Está activo? (si/no): ");
-        boolean resultado = hp.guardarMedico(nombre, apellido, correo, cedula, genero, especialidad, activo, horario);
-        if(resultado) {
-            System.out.println("\nMédico registrado exitosamente. \n");
-        } else {
-            System.out.println("\nError al registrar el médico. \n");
+        try {
+            System.out.println("\n\n----Registrar Medico----");
+            String nombre = Validaciones.validarString("Nombre: ");
+            String apellido = Validaciones.validarString("Apellido: ");
+            String correo = Validaciones.validarCorreo("Correo: ");
+            String cedula = Validaciones.validarString("Cédula: ");
+            String genero = Validaciones.validarString("Género: ");
+            String especialidad = Validaciones.validarString("Especialidad: ");
+            System.out.println("-----Horarios de Atención");
+            String dias = Validaciones.validarString("Ingrese los días de atención (separados por coma (,)): ");
+            LocalTime horaInicio = Validaciones.validarHora("Ingrese la hora de inicio (HH:mm): ");
+            LocalTime horaFin = Validaciones.validarHora("Ingrese hasta que hora atiende (HH:mm): ");
+            HorarioAtencion horario = hp.crearHorario(dias, horaInicio, horaFin);
+            boolean activo = Validaciones.validarSiNo("¿Está activo? (si/no): ");
+            boolean resultado = hp.guardarMedico(nombre, apellido, correo, cedula, genero, especialidad, activo,
+                    horario);
+            if (resultado) {
+                System.out.println("\nMédico registrado exitosamente. \n");
+            } else {
+                System.out.println("\nError al registrar el médico. \n");
+            }
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique los datos ingresados e intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura y espacio en disco.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación o contacte al administrador.");
         }
     }
 
     private static void listarPacientes(Hospital hp) {
         System.out.println("----Listar Pacientes----");
         int opcion = Validaciones.validarEntero("Listar por: \n1. Tipo de Seguro \n2. Todos. \n");
-        switch(opcion) {
+        switch (opcion) {
             case 1 -> {
                 int tipoSeguro = Validaciones.validarEntero("Ingrese el tipo de seguro: \n1. IESS \n2. PRIVADO. \n");
                 hp.listarPacientes(tipoSeguro);
@@ -128,8 +159,9 @@ public class Main {
 
     private static void listarMedicos(Hospital hp) {
         System.out.println("----Listar Médicos----");
-        int opcion = Validaciones.validarEntero("Listar por: \n1. Especialidad \n2. Genero. \n3. Activos \n4. Todos. \n");
-        switch(opcion) {
+        int opcion = Validaciones
+                .validarEntero("Listar por: \n1. Especialidad \n2. Genero. \n3. Activos \n4. Todos. \n");
+        switch (opcion) {
             case 1 -> {
                 String especialidad = Validaciones.validarString("Ingrese la especialidad: \n");
                 hp.listarMedicosPorEspecialidad(especialidad);
@@ -146,26 +178,48 @@ public class Main {
             }
         }
     }
-    
+
     private static void crearCitaMedica(Hospital hp) {
-        System.out.println("----Crear Cita Médica----");
-        String paciente = confirmarPaciente(hp);
-        if (paciente == null) return;
-        String medico = confirmarMedico(hp);
-        if (medico == null) return;
-        String cita = Validaciones.validarCita("Ingrese el día y la hora de la cita (dia HH:mm): ");
-        boolean resultado = hp.crearCitaMedica(cita, paciente, medico);
-        if(resultado) {
-            System.out.println("\nCita médica creada exitosamente. \n");
-        } else {
-            System.out.println("\nError al crear la cita médica. \n");
+        try {
+            System.out.println("----Crear Cita Médica----");
+            String paciente = confirmarPaciente(hp);
+            if (paciente == null)
+                return;
+            String medico = confirmarMedico(hp);
+            if (medico == null)
+                return;
+            String cita = Validaciones.validarCita("Ingrese el día y la hora de la cita (dia HH:mm): ");
+            boolean resultado = hp.crearCitaMedica(cita, paciente, medico);
+            if (resultado) {
+                System.out.println("\nCita médica creada exitosamente. \n");
+            } else {
+                System.out.println("\nError al crear la cita médica. \n");
+            }
+        } catch (PacienteNoEncontradoException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Verifique el correo del paciente o regístrelo si es nuevo.");
+        } catch (MedicoNoEncontradoException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Verifique el correo del médico o regístrelo si es nuevo.");
+        } catch (CitaNoDisponibleException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Seleccione otro horario u otro médico de la misma especialidad.");
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique el formato de la cita (ej: lunes 14:30).");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
 
     private static String confirmarMedico(Hospital hp) {
         int n = 0;
         String correoMedico = Validaciones.validarString("Ingrese el correo del médico: ");
-        while(!hp.medicoExiste(correoMedico) && n < 3) {
+        while (!hp.medicoExiste(correoMedico) && n < 3) {
             System.out.println("El médico no está registrado.");
             correoMedico = Validaciones.validarString("Ingrese el correo del médico: ");
             n++;
@@ -181,7 +235,7 @@ public class Main {
     private static String confirmarPaciente(Hospital hp) {
         int n = 0;
         String correoPaciente = Validaciones.validarString("Ingrese el correo del paciente: ");
-        while(!hp.pacienteExiste(correoPaciente) && n < 3) {
+        while (!hp.pacienteExiste(correoPaciente) && n < 3) {
             System.out.println("El paciente no está registrado.");
             correoPaciente = Validaciones.validarString("Ingrese el correo del paciente: ");
             n++;
@@ -197,16 +251,16 @@ public class Main {
         System.out.println("----Modificar o Cancelar Cita Médica----");
         String correoPaciente = confirmarPaciente(hp);
         List<String> citasPaciente = hp.obtenerCitasPorPaciente(correoPaciente);
-        if(citasPaciente.isEmpty()) {
+        if (citasPaciente.isEmpty()) {
             System.out.println("El paciente no tiene citas registradas.");
             return;
         }
-        for(String cita : citasPaciente) {
+        for (String cita : citasPaciente) {
             System.out.println(cita);
         }
         int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea modificar o cancelar: ");
         String opcion = Validaciones.validarString("Que desea hacer? \n1. Modificar Cita. \n2. Cancelar Cita. \n");
-        switch(opcion) {
+        switch (opcion) {
             case "1" -> {
                 modificarCita(hp, idCita);
             }
@@ -217,56 +271,91 @@ public class Main {
     }
 
     private static void modificarCita(Hospital hp, int idCita) {
-        System.out.println("----Modificar Cita Médica----");
-        String nuevaCita = Validaciones.validarCita("Ingrese el nuevo día y la nueva hora de la cita (dia HH:mm): ");
-        boolean resultado = hp.modificarCitaMedica(idCita, nuevaCita);
-        if(resultado) {
-            System.out.println("\nCita médica modificada exitosamente. \n");
-        } else {
-            System.out.println("\nError al modificar la cita médica. \n");
+        try {
+            System.out.println("----Modificar Cita Médica----");
+            String nuevaCita = Validaciones
+                    .validarCita("Ingrese el nuevo día y la nueva hora de la cita (dia HH:mm): ");
+            boolean resultado = hp.modificarCitaMedica(idCita, nuevaCita);
+            if (resultado) {
+                System.out.println("\nCita médica modificada exitosamente. \n");
+            } else {
+                System.out.println("\nError al modificar la cita médica. \n");
+            }
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique el formato de la cita (ej: lunes 14:30).");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
 
     private static void cancelarCita(Hospital hp, int idCita) {
-        System.out.println("----Cancelar Cita Médica----");
-        boolean confirmar = Validaciones.validarSiNo("¿Está seguro que desea cancelar la cita? (si/no): ");
-        if (!confirmar) {
-            System.out.println("Cancelación de cita médica abortada.");
-            return;
-        }
-        boolean resultado = hp.cancelarCitaMedica(idCita);
-        if(resultado) {
-            System.out.println("\nCita médica cancelada exitosamente. \n");
-        } else {
-            System.out.println("\nError al cancelar la cita médica. \n");
+        try {
+            System.out.println("----Cancelar Cita Médica----");
+            boolean confirmar = Validaciones.validarSiNo("¿Está seguro que desea cancelar la cita? (si/no): ");
+            if (!confirmar) {
+                System.out.println("Cancelación de cita médica abortada.");
+                return;
+            }
+            boolean resultado = hp.cancelarCitaMedica(idCita);
+            if (resultado) {
+                System.out.println("\nCita médica cancelada exitosamente. \n");
+            } else {
+                System.out.println("\nError al cancelar la cita médica. \n");
+            }
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
 
     private static void citaAtendida(Hospital hp) {
-        System.out.println("----Marcar Cita como Atendida----");
-        String correoPaciente = confirmarPaciente(hp);
-        List<String> citasPaciente = hp.obtenerCitasPorPaciente(correoPaciente);
-        if(citasPaciente.isEmpty()) {
-            System.out.println("El paciente no tiene citas registradas.");
-            return;
-        }
-        for(String cita : citasPaciente) {
-            System.out.println(cita);
-        }
-        int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea marcar como atendida: ");
-        boolean resultado = hp.marcarCitaAtendida(idCita);
-        if(resultado) {
-            System.out.println("\nCita médica marcada como atendida exitosamente. \n");
-        } else {
-            System.out.println("\nError al marcar la cita médica como atendida. \n");
+        try {
+            System.out.println("----Marcar Cita como Atendida----");
+            String correoPaciente = confirmarPaciente(hp);
+            List<String> citasPaciente = hp.obtenerCitasPorPaciente(correoPaciente);
+            if (citasPaciente.isEmpty()) {
+                System.out.println("El paciente no tiene citas registradas.");
+                return;
+            }
+            for (String cita : citasPaciente) {
+                System.out.println(cita);
+            }
+            int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea marcar como atendida: ");
+            boolean resultado = hp.marcarCitaAtendida(idCita);
+            if (resultado) {
+                System.out.println("\nCita médica marcada como atendida exitosamente. \n");
+            } else {
+                System.out.println("\nError al marcar la cita médica como atendida. \n");
+            }
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
-    
+
     private static void registrarTratamientos(Hospital hp) {
         System.out.println("----Registrar Tratamientos para un Paciente----");
         String correoPaciente = confirmarPaciente(hp);
-        int opcion = Validaciones.validarEntero("Que tipo de tratamiento desea registrar? \n1. Medicación. \n2. Terapia. \n3. Cirugía");
-        switch(opcion) {
+        int opcion = Validaciones
+                .validarEntero("Que tipo de tratamiento desea registrar? \n1. Medicación. \n2. Terapia. \n3. Cirugía");
+        switch (opcion) {
             case 1 -> {
                 registrarMedicacion(hp, correoPaciente);
             }
@@ -280,43 +369,85 @@ public class Main {
     }
 
     private static void registrarMedicacion(Hospital hp, String correoPaciente) {
-        System.out.println("----Registrar Medicación----");
-        String medicamento = Validaciones.validarString("Nombre del medicamento: ");
-        double costo = Validaciones.validarDouble("Costo: ");
-        int duracionDias = Validaciones.validarEntero("Duración en días: ");
-        boolean resultado = hp.registrarMedicacion(correoPaciente, medicamento, duracionDias, costo);
-        if(resultado) {
-            System.out.println("\nMedicacion registrada exitosamente. \n");
-        } else {
-            System.out.println("\nError al registrar la medicación. \n");
+        try {
+            System.out.println("----Registrar Medicación----");
+            String medicamento = Validaciones.validarString("Nombre del medicamento: ");
+            double costo = Validaciones.validarDouble("Costo: ");
+            int duracionDias = Validaciones.validarEntero("Duración en días: ");
+            boolean resultado = hp.registrarMedicacion(correoPaciente, medicamento, duracionDias, costo);
+            if (resultado) {
+                System.out.println("\nMedicacion registrada exitosamente. \n");
+            } else {
+                System.out.println("\nError al registrar la medicación. \n");
+            }
+        } catch (PacienteNoEncontradoException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Verifique el correo del paciente o regístrelo si es nuevo.");
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique los datos ingresados e intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
 
     private static void registrarTerapia(Hospital hp, String correoPaciente) {
-        System.out.println("----Registrar Terapia----");
-        String tipoTerapia = Validaciones.validarString("Tipo de terapia: ");
-        double costo = Validaciones.validarDouble("Costo: ");
-        int numeroSesiones = Validaciones.validarEntero("Número de sesiones: ");
-        boolean resultado = hp.registrarTerapia(correoPaciente, tipoTerapia, numeroSesiones, costo);
-        if(resultado) {
-            System.out.println("\nTerapia registrada exitosamente. \n");
-        } else {
-            System.out.println("\nError al registrar la terapia. \n");
+        try {
+            System.out.println("----Registrar Terapia----");
+            String tipoTerapia = Validaciones.validarString("Tipo de terapia: ");
+            double costo = Validaciones.validarDouble("Costo: ");
+            int numeroSesiones = Validaciones.validarEntero("Número de sesiones: ");
+            boolean resultado = hp.registrarTerapia(correoPaciente, tipoTerapia, numeroSesiones, costo);
+            if (resultado) {
+                System.out.println("\nTerapia registrada exitosamente. \n");
+            } else {
+                System.out.println("\nError al registrar la terapia. \n");
+            }
+        } catch (PacienteNoEncontradoException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Verifique el correo del paciente o regístrelo si es nuevo.");
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique los datos ingresados e intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
 
     private static void registrarCirugia(Hospital hp, String correoPaciente) {
-        System.out.println("----Registrar Cirugía----");
-        String tipoCirugia = Validaciones.validarString("Tipo de cirugía: ");
-        double costo = Validaciones.validarDouble("Costo: ");
-        boolean resultado = hp.registrarCirugia(correoPaciente, tipoCirugia, costo);
-        if(resultado) {
-            System.out.println("\nCirugía registrada exitosamente. \n");
-        } else {
-            System.out.println("\nError al registrar la cirugía. \n");
+        try {
+            System.out.println("----Registrar Cirugía----");
+            String tipoCirugia = Validaciones.validarString("Tipo de cirugía: ");
+            double costo = Validaciones.validarDouble("Costo: ");
+            boolean resultado = hp.registrarCirugia(correoPaciente, tipoCirugia, costo);
+            if (resultado) {
+                System.out.println("\nCirugía registrada exitosamente. \n");
+            } else {
+                System.out.println("\nError al registrar la cirugía. \n");
+            }
+        } catch (PacienteNoEncontradoException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Solución: Verifique el correo del paciente o regístrelo si es nuevo.");
+        } catch (DatoInvalidoException e) {
+            System.out.println("ERROR DE DATOS: " + e.getMessage());
+            System.out.println("Solución: Verifique los datos ingresados e intente nuevamente.");
+        } catch (ArchivoException e) {
+            System.out.println("ERROR DE ARCHIVO: " + e.getMessage());
+            System.out.println("Solución: Verifique permisos de escritura.");
+        } catch (Exception e) {
+            System.out.println("ERROR INESPERADO: " + e.getMessage());
+            System.out.println("Solución: Reinicie la operación.");
         }
     }
-    
+
     private static void listarCitasAtendidasPorEspecialidad(Hospital hp) {
         System.out.println("----Citas Atendidas por Especialidad----");
         String especialidad = Validaciones.validarString("Ingrese la especialidad: ");
@@ -325,16 +456,17 @@ public class Main {
 
     private static void ingresosTotalesPorTratamientos(Hospital hp) {
         System.out.println("----Ingresos Totales por Tratamientos----");
-        int opcion = Validaciones.validarEntero("Calcular ingresos por: \n1. Medicación. \n2. Terapia. \n3. Cirugía. \n4. Todos los tratamientos. \n");
-        switch(opcion) {
+        int opcion = Validaciones.validarEntero(
+                "Calcular ingresos por: \n1. Medicación. \n2. Terapia. \n3. Cirugía. \n4. Todos los tratamientos. \n");
+        switch (opcion) {
             case 1 -> {
-                hp.calcularIngresosTratamiento("medicacion");
+                hp.calcularIngresosTotalesPorTratamientos();
             }
             case 2 -> {
-                hp.calcularIngresosTratamiento("terapia");
+                hp.calcularIngresosTotalesPorTratamientos();
             }
             case 3 -> {
-                hp.calcularIngresosTratamiento("cirugia");
+                hp.calcularIngresosTotalesPorTratamientos();
             }
             case 4 -> {
                 hp.calcularIngresosTotalesPorTratamientos();

@@ -1,7 +1,5 @@
 package proyecto.models.users;
 
-import java.util.ArrayList;
-
 public abstract class Persona {
     private int id;
     private String nombre;
@@ -16,6 +14,7 @@ public abstract class Persona {
         this.correo = correo;
         this.cedulaString = cedulaString;
     }
+
     public String getCedulaString() {
         return cedulaString;
     }

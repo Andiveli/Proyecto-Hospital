@@ -3,65 +3,243 @@ package proyecto.utilities;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Scanner;
+import proyecto.exceptions.DatoInvalidoException;
 
 public class Validaciones {
     private static final Scanner sc = new Scanner(System.in);
-    
-    public static int validarEntero(String mensaje) {
+
+    /**
+     * Valida la entrada de un número entero con manejo de excepciones.
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return entero validado
+     * @throws DatoInvalidoException si hay error crítico o se exceden intentos
+     */
+    public static int validarEntero(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        while(!sc.hasNextInt()) {
-            System.out.print("Entrada invalida. \n" + mensaje);
-            sc.next();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                if (!sc.hasNextInt()) {
+                    String entrada = sc.next();
+                    throw new DatoInvalidoException(
+                            "Entrada inválida: '" + entrada + "'. Debe ingresar un número entero.");
+                }
+                int respuesta = sc.nextInt();
+                sc.nextLine(); // Limpiar buffer
+                return respuesta;
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al leer la entrada.");
+                sc.nextLine(); // Limpiar buffer en caso de error
+            }
         }
-        int respuesta = sc.nextInt();
-        sc.nextLine();
-        return respuesta;
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
-    public static double validarDouble(String mensaje) {
+    /**
+     * Valida la entrada de un número decimal con manejo de excepciones.
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return double validado
+     * @throws DatoInvalidoException si hay error crítico o se exceden intentos
+     */
+    public static double validarDouble(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        while(!sc.hasNextDouble()) {
-            System.out.print("Entrada invalida. \n" + mensaje);
-            sc.next();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                if (!sc.hasNextDouble()) {
+                    String entrada = sc.next();
+                    throw new DatoInvalidoException(
+                            "Entrada inválida: '" + entrada + "'. Debe ingresar un número decimal.");
+                }
+                double respuesta = sc.nextDouble();
+                sc.nextLine(); // Limpiar buffer
+
+                // Validación adicional: el costo no puede ser negativo
+                if (respuesta < 0) {
+                    throw new DatoInvalidoException("El valor no puede ser negativo.");
+                }
+
+                return respuesta;
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al leer la entrada.");
+                sc.nextLine(); // Limpiar buffer en caso de error
+            }
         }
-        double respuesta = sc.nextDouble();
-        sc.nextLine();
-        return respuesta;
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
-    public static String validarString(String mensaje) {
+    /**
+     * Valida una entrada de texto básica.
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return texto validado
+     * @throws DatoInvalidoException si el texto está vacío o hay error crítico
+     */
+    public static String validarString(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        return sc.nextLine().trim().toLowerCase();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                String respuesta = sc.nextLine().trim();
+
+                if (respuesta.isEmpty()) {
+                    throw new DatoInvalidoException("El campo no puede estar vacío.");
+                }
+
+                return respuesta.toLowerCase();
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al leer la entrada.");
+            }
+        }
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
-    public static String validarCorreo(String mensaje) {
+    /**
+     * Valida el formato de un correo electrónico.
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return correo validado
+     * @throws DatoInvalidoException si el formato es inválido o hay error crítico
+     */
+    public static String validarCorreo(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        String respuesta = sc.nextLine().trim();
-        while(!respuesta.contains("@") || !respuesta.contains(".")) {
-            System.out.print("Correo invalido. \n" + mensaje);
-            respuesta = sc.nextLine().trim();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                String respuesta = sc.nextLine().trim();
+
+                if (respuesta.isEmpty()) {
+                    throw new DatoInvalidoException("El correo no puede estar vacío.");
+                }
+
+                // Validación más robusta de correo
+                if (!respuesta.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+                    throw new DatoInvalidoException("Formato de correo inválido. Debe ser: usuario@dominio.extensión");
+                }
+
+                return respuesta.toLowerCase();
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al leer la entrada.");
+            }
         }
-        return respuesta;
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
-    public static boolean validarSiNo(String mensaje) {
+    /**
+     * Valida una respuesta de sí/no.
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return true si es "sí", false si es "no"
+     * @throws DatoInvalidoException si hay error crítico o se exceden intentos
+     */
+    public static boolean validarSiNo(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        String respuesta = sc.nextLine();
-        while(!respuesta.equalsIgnoreCase("si") && !respuesta.equalsIgnoreCase("no")) {
-            System.out.print("Entrada invalida. \n" + mensaje);
-            respuesta = sc.nextLine(); //Este deberia ir al inicio
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                String respuesta = sc.nextLine().trim().toLowerCase();
+
+                if (respuesta.equals("si") || respuesta.equals("sí")) {
+                    return true;
+                } else if (respuesta.equals("no")) {
+                    return false;
+                } else {
+                    throw new DatoInvalidoException(
+                            "Entrada inválida: '" + respuesta + "'. Debe responder 'si' o 'no'.");
+                }
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al leer la entrada.");
+            }
         }
-        return respuesta.equalsIgnoreCase("si");
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
-    public static LocalTime validarHora(String mensaje) {
+    /**
+     * Valida el formato de una hora (HH:mm).
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return LocalTime validado
+     * @throws DatoInvalidoException si el formato es inválido o hay error crítico
+     */
+    public static LocalTime validarHora(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        String respuesta = sc.nextLine();
-        while(!isHora(respuesta)) {
-            System.out.println("El formato de la hora es incorrecto. Recuerde (HH:mm): ");
-            respuesta = sc.nextLine();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
+
+        while (intentos < MAX_INTENTOS) {
+            try {
+                String respuesta = sc.nextLine().trim();
+
+                if (!isHora(respuesta)) {
+                    throw new DatoInvalidoException("Formato de hora inválido. Debe ser HH:mm (ej: 14:30)");
+                }
+
+                return LocalTime.parse(respuesta);
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al procesar la hora.");
+            }
         }
-        return LocalTime.parse(respuesta);
+
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
     }
 
     private static boolean isHora(String respuesta) {
@@ -83,7 +261,7 @@ public class Validaciones {
     }
 
     public static String convertirIngles(String dia) {
-        return switch(dia) {
+        return switch (dia) {
             case "lunes" -> "MONDAY";
             case "martes" -> "TUESDAY";
             case "miercoles" -> "WEDNESDAY";
@@ -95,18 +273,51 @@ public class Validaciones {
         };
     }
 
-    public static String validarCita(String mensaje) {
+    /**
+     * Valida el formato de una cita médica (día HH:mm).
+     * 
+     * @param mensaje Mensaje a mostrar al usuario
+     * @return cita validada
+     * @throws DatoInvalidoException si el formato es inválido o hay error crítico
+     */
+    public static String validarCita(String mensaje) throws DatoInvalidoException {
         System.out.print(mensaje);
-        String respuesta = sc.nextLine();
+        int intentos = 0;
+        final int MAX_INTENTOS = 3;
 
-        String[] partes = respuesta.split(" ");
-        while(partes.length != 2 || !isDia(partes[0]) || !isHora(partes[1])) {
-            System.out.print("Entrada invalida. \n" + mensaje);
-            respuesta = sc.nextLine();
-            partes = respuesta.split(" ");
+        while (intentos < MAX_INTENTOS) {
+            try {
+                String respuesta = sc.nextLine().trim();
+
+                String[] partes = respuesta.split(" ");
+
+                if (partes.length != 2) {
+                    throw new DatoInvalidoException("Formato inválido. Debe ser: día HH:mm (ej: lunes 14:30)");
+                }
+
+                if (!isDia(partes[0])) {
+                    throw new DatoInvalidoException(
+                            "Día inválido. Debe ser: lunes, martes, miércoles, jueves, viernes, sábado o domingo");
+                }
+
+                if (!isHora(partes[1])) {
+                    throw new DatoInvalidoException("Hora inválida. Debe estar en formato HH:mm (ej: 14:30)");
+                }
+
+                return respuesta.toLowerCase();
+            } catch (DatoInvalidoException e) {
+                intentos++;
+                if (intentos < MAX_INTENTOS) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.print("Intente nuevamente: ");
+                }
+            } catch (Exception e) {
+                intentos++;
+                System.out.println("Error inesperado al procesar la cita.");
+            }
         }
-        return respuesta;
-    }
 
+        throw new DatoInvalidoException("Número máximo de intentos alcanzado. Operación cancelada.");
+    }
 
 }
