@@ -12,10 +12,19 @@ public class Terapia extends Tratamiento  {
     }
 
     @Override
+    public String getTipo() {
+        return "terapia";
+    }
+
+    @Override
     public double calcularCosto() {
         double costoBase = getCostoBase();
-        double descuento = 0.15 * costoBase; // Descuento del 15% para terapias
-        return costoBase - descuento;
+        double recargo = 0.15 * getPrecio(); // Recargo del 15% para terapias
+        if(getDuracion() > 30) {
+            recargo *= 0.70; // Descuento del 30% si la duración es mayor a 30 horas
+        }
+        return costoBase + recargo;
+
     }
 
     @Override

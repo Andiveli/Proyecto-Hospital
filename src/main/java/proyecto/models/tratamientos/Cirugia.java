@@ -14,7 +14,7 @@ public class Cirugia extends Tratamiento{
     @Override
     public double calcularCosto() {
         double costoBase = getCostoBase();
-        double recargo = 0.25 * costoBase; // Recargo del 25% para cirugías
+        double recargo = 0.25 * getPrecio(); // Recargo del 25% para cirugías
         return costoBase + recargo;
     }
 
@@ -30,6 +30,11 @@ public class Cirugia extends Tratamiento{
         } catch (Exception e) {
             System.out.println("Error al guardar la cirugía: " + e.getMessage());
         }
+    }
+
+    @Override
+    public String getTipo() {
+        return "cirugia";
     }
 
     public static ArrayList<Tratamiento> cargarTodas() {

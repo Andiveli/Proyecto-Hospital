@@ -34,5 +34,6 @@ public abstract class Tratamiento {
     }
 
     public abstract double calcularCosto();
+    public abstract String getTipo();
 }
 

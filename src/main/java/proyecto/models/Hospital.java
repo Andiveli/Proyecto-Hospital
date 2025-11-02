@@ -390,4 +390,59 @@ public class Hospital {
             listaTratamientosPorPaciente.put(paciente, tratamientos);
         }
     }
+
+    public void listarCitasAtendidasPorEspecialidad(String especialidad) {
+        System.out.println("Citas atendidas para la especialidad: " + especialidad);
+        int suma = 0;
+        for(Cita c: listaCitas) {
+            if(c.getEstadoCita() == EstadoCita.ATENDIDA) {
+                for(Medico m: listaMedicos) {
+                    if(m.getCorreo().equalsIgnoreCase(c.getMedico()) && m.getEspecialidad().equalsIgnoreCase(especialidad)) {
+                        System.out.println(c);
+                        suma++;
+                    }
+                }
+            }
+        }
+        System.out.println("Total de citas atendidas para la especialidad " + especialidad + ": " + suma);
+    }
+
+    public void listarHistorialTratamientos(String correoPaciente) {
+        for(Paciente p: listaPacientes) {
+            if(p.getCorreo().equalsIgnoreCase(correoPaciente)) {
+                System.out.println("Historial de tratamientos del paciente " + p.getNombre() + ":");
+                if(listaTratamientosPorPaciente.containsKey(p)) {
+                    for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
+                        System.out.println(t);
+                    }
+                } else {
+                    System.out.println("No hay tratamientos registrados para este paciente.");
+                }
+                return;
+            }
+        }
+        System.out.println("Paciente no encontrado.");
+    }
+
+    public void calcularIngresosTotalesPorTratamientos() {
+        double totalIngresos = 0.0;
+        for(Paciente p: listaTratamientosPorPaciente.keySet()) {
+            for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
+                totalIngresos += t.calcularCosto();
+            }
+        }
+        System.out.println("Ingresos totales por tratamientos: $" + totalIngresos);
+    }
+
+    public void calcularIngresosTratamiento(String tipoTratamiento) {
+        double totalIngresos = 0.0;
+        for(Paciente p: listaTratamientosPorPaciente.keySet()) {
+            for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
+                if(t.getTipo().equalsIgnoreCase(tipoTratamiento)) {
+                    totalIngresos += t.calcularCosto();
+                }
+            }
+        }
+        System.out.println("Ingresos totales por tratamientos de tipo " + tipoTratamiento + ": $" + totalIngresos);
+    }
 }

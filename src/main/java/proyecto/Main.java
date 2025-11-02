@@ -17,7 +17,7 @@ public class Main {
         String respuesta = "si";
         do {
             System.out.println("\n----Menú Principal----");
-            int opcion = Validaciones.validarEntero("1. Registrar Paciente. \n2. Registrar Médico. \n3. Listar Pacientes. \n4. Listar Médicos. \n5. Crear Cita Médica. \n6. Modificar o cancelar cita. \n7. Registrar Tratamientos para un paciente. \n8. Marcar cita atendida. \n9. Reporte: citas atendidas por especialidad. \n10. Reporte: ingresos totales por tratamientos. \n11. Salir. \n");
+            int opcion = Validaciones.validarEntero("1. Registrar Paciente. \n2. Registrar Médico. \n3. Listar Pacientes. \n4. Listar Médicos. \n5. Crear Cita Médica. \n6. Modificar o cancelar cita. \n7. Registrar Tratamientos para un paciente. \n8. Marcar cita atendida. \n9. Reportes \n10. Salir. \n");
             switch(opcion) {
                 case 1 -> {
                     registrarPaciente(hp);
@@ -44,10 +44,7 @@ public class Main {
                     citaAtendida(hp);
                 }
                 case 9 -> {
-                    System.out.println("Reporte: citas atendidas por especialidad");
-                }
-                case 10 -> {
-                    System.out.println("Reporte: ingresos totales por tratamientos");
+                    reporte(hp);
                 }
                 default -> {
                     System.out.println("Saliendo del sistema...");
@@ -55,6 +52,23 @@ public class Main {
                 }
             }
         } while (respuesta.equalsIgnoreCase("si"));
+    }
+
+    private static void reporte(Hospital hp) {
+        System.out.println("----Reportes----");
+        int opcion = Validaciones.validarEntero("Seleccione el reporte que desea generar: \n1. Citas atendidas por especialidad. \n2. Ingresos totales por tratamientos. \n3. Historial de tratamientos por paciente. \n");
+        switch(opcion) {
+            case 1 -> {
+                listarCitasAtendidasPorEspecialidad(hp);
+            }
+            case 2 -> {
+                ingresosTotalesPorTratamientos(hp);
+            }
+            case 3 -> {
+                String correoPaciente = confirmarPaciente(hp);
+                hp.listarHistorialTratamientos(correoPaciente);
+            }
+        }
     }
 
     private static void registrarPaciente(Hospital hp) {
@@ -104,6 +118,9 @@ public class Main {
             }
             case 2 -> {
                 hp.listarPacientesAll();
+            }
+            default -> {
+                System.out.println("Opción no válida.");
             }
         }
     }
@@ -282,6 +299,31 @@ public class Main {
             System.out.println("\nCirugía registrada exitosamente. \n");
         } else {
             System.out.println("\nError al registrar la cirugía. \n");
+        }
+    }
+    
+    private static void listarCitasAtendidasPorEspecialidad(Hospital hp) {
+        System.out.println("----Citas Atendidas por Especialidad----");
+        String especialidad = Validaciones.validarString("Ingrese la especialidad: ");
+        hp.listarCitasAtendidasPorEspecialidad(especialidad);
+    }
+
+    private static void ingresosTotalesPorTratamientos(Hospital hp) {
+        System.out.println("----Ingresos Totales por Tratamientos----");
+        int opcion = Validaciones.validarEntero("Calcular ingresos por: \n1. Medicación. \n2. Terapia. \n3. Cirugía. \n4. Todos los tratamientos. \n");
+        switch(opcion) {
+            case 1 -> {
+                hp.calcularIngresosTratamiento("medicacion");
+            }
+            case 2 -> {
+                hp.calcularIngresosTratamiento("terapia");
+            }
+            case 3 -> {
+                hp.calcularIngresosTratamiento("cirugia");
+            }
+            case 4 -> {
+                hp.calcularIngresosTotalesPorTratamientos();
+            }
         }
     }
 }

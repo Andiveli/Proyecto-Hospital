@@ -11,6 +11,11 @@ public class Medicacion extends Tratamiento {
     public Medicacion(String nombre, int duracion, double precio) {
         super(nombre, duracion, precio);
     }
+
+    @Override
+    public String getTipo() {
+        return "medicacion";
+    }
     
     @Override
     public double calcularCosto() {
