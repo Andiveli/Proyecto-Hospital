@@ -28,7 +28,7 @@ public class Hospital {
     private ArrayList<Tratamiento> listaTratamientos;
     private HashMap<Paciente, ArrayList<Tratamiento>> listaTratamientosPorPaciente;
     private HashMap<Paciente, ArrayList<Factura>> listaFacturas;
-
+    
     public Hospital(String nombre) {
         this.nombre = nombre;
         this.listaPacientes = Paciente.cargarTodos();
@@ -40,6 +40,82 @@ public class Hospital {
         this.listaTratamientos.addAll(Cirugia.cargarTodas());
         this.listaTratamientosPorPaciente = cargarTratamientosPorPaciente();
         this.listaFacturas = new HashMap<>();
+    }
+    
+    private boolean isDiaAnterior(Cita c, LocalDateTime ahora) {
+        if (c.getDia().getValue() < ahora.getDayOfWeek().getValue() ||
+                (c.getDia().getValue() == ahora.getDayOfWeek().getValue() && c.getHora().isBefore(ahora.toLocalTime()))) {
+            System.out.println("No se puede cancelar una cita pasada.");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDiaActual(Cita c, LocalDateTime ahora) {
+        if (c.getDia() == ahora.getDayOfWeek() &&
+                c.getHora().minusHours(24).isBefore(ahora.toLocalTime())) {
+            System.out.println("No se puede cancelar una cita con menos de 24 horas de anticipación.");
+            return true;
+        }
+        return false;
+    }
+
+    private void guardarMedicos() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("medicos.txt"))) {
+            for(Medico m: listaMedicos) {
+                writer.write(m.toString());
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            System.out.println("Error al guardar los médicos: " + e.getMessage());
+        }
+    }
+
+    private void guardarCitas() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("citas.txt"))) {
+            for(Cita c: listaCitas) {
+                writer.write(c.toString());
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            System.out.println("Error al guardar las citas: " + e.getMessage());
+        }
+        guardarMedicos();
+    }
+
+    private void agregarTratamientoPaciente(Paciente paciente, Tratamiento tratamiento) {
+        if(listaTratamientosPorPaciente.containsKey(paciente)) {
+            listaTratamientosPorPaciente.get(paciente).add(tratamiento);
+        } else {
+            ArrayList<Tratamiento> tratamientos = new ArrayList<>();
+            tratamientos.add(tratamiento);
+            listaTratamientosPorPaciente.put(paciente, tratamientos);
+        }
+        Factura factura = new Factura(listaFacturas.size() + 1, paciente.getCorreo(), tratamiento.getNombre(), tratamiento.pagar(), LocalDateTime.now());
+        factura.guardar();
+    }
+
+    private HashMap<Paciente, ArrayList<Tratamiento>> cargarTratamientosPorPaciente() {
+        ArrayList<Factura> facturas = Factura.cargarTodas();
+        HashMap<Paciente, ArrayList<Tratamiento>> map = new HashMap<>();
+        for(Factura f: facturas) {
+            for(Paciente p: listaPacientes) {
+                if(p.getCorreo().equalsIgnoreCase(f.getPaciente())) {
+                    for(Tratamiento t: listaTratamientos) {
+                        if(f.getTratamientos().equalsIgnoreCase(t.getNombre())) {
+                            if(map.containsKey(p)) {
+                                map.get(p).add(t);
+                            } else {
+                                ArrayList<Tratamiento> tratamientos = new ArrayList<>();
+                                tratamientos.add(t);
+                                map.put(p, tratamientos);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return map;
     }
 
     public boolean guardarPaciente(String nombre, String apellido, String correo, String telefono, int seguro) {
@@ -295,24 +371,6 @@ public class Hospital {
         return false;
     }
 
-    private boolean isDiaAnterior(Cita c, LocalDateTime ahora) {
-        if (c.getDia().getValue() < ahora.getDayOfWeek().getValue() ||
-                (c.getDia().getValue() == ahora.getDayOfWeek().getValue() && c.getHora().isBefore(ahora.toLocalTime()))) {
-            System.out.println("No se puede cancelar una cita pasada.");
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isDiaActual(Cita c, LocalDateTime ahora) {
-        if (c.getDia() == ahora.getDayOfWeek() &&
-                c.getHora().minusHours(24).isBefore(ahora.toLocalTime())) {
-            System.out.println("No se puede cancelar una cita con menos de 24 horas de anticipación.");
-            return true;
-        }
-        return false;
-    }
-
     public boolean marcarCitaAtendida(int idCita) {
         for(Cita c: listaCitas) {
             if(c.getIdCita() == idCita) {
@@ -334,29 +392,6 @@ public class Hospital {
         }
         System.out.println("Cita no encontrada.");
         return false;
-    }
-
-    private void guardarCitas() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("citas.txt"))) {
-            for(Cita c: listaCitas) {
-                writer.write(c.toString());
-                writer.newLine();
-            }
-        } catch (Exception e) {
-            System.out.println("Error al guardar las citas: " + e.getMessage());
-        }
-        guardarMedicos();
-    }
-
-    private void guardarMedicos() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("medicos.txt"))) {
-            for(Medico m: listaMedicos) {
-                writer.write(m.toString());
-                writer.newLine();
-            }
-        } catch (Exception e) {
-            System.out.println("Error al guardar los médicos: " + e.getMessage());
-        }
     }
 
     public boolean registrarMedicacion(String correo, String medicamento, int duracion, double costo) {
@@ -399,18 +434,6 @@ public class Hospital {
         }
         System.out.println("Paciente no encontrado.");
         return false;
-    }
-
-    private void agregarTratamientoPaciente(Paciente paciente, Tratamiento tratamiento) {
-        if(listaTratamientosPorPaciente.containsKey(paciente)) {
-            listaTratamientosPorPaciente.get(paciente).add(tratamiento);
-        } else {
-            ArrayList<Tratamiento> tratamientos = new ArrayList<>();
-            tratamientos.add(tratamiento);
-            listaTratamientosPorPaciente.put(paciente, tratamientos);
-        }
-        Factura factura = new Factura(listaFacturas.size() + 1, paciente.getCorreo(), tratamiento.getNombre(), tratamiento.pagar(), LocalDateTime.now());
-        factura.guardar();
     }
 
     public void listarCitasAtendidasPorEspecialidad(String especialidad) {
@@ -466,28 +489,5 @@ public class Hospital {
             }
         }
         System.out.println("Ingresos totales por tratamientos de tipo " + tipoTratamiento + ": $" + totalIngresos);
-    }
-
-    private HashMap<Paciente, ArrayList<Tratamiento>> cargarTratamientosPorPaciente() {
-        ArrayList<Factura> facturas = Factura.cargarTodas();
-        HashMap<Paciente, ArrayList<Tratamiento>> map = new HashMap<>();
-        for(Factura f: facturas) {
-            for(Paciente p: listaPacientes) {
-                if(p.getCorreo().equalsIgnoreCase(f.getPaciente())) {
-                    for(Tratamiento t: listaTratamientos) {
-                        if(f.getTratamientos().equalsIgnoreCase(t.getNombre())) {
-                            if(map.containsKey(p)) {
-                                map.get(p).add(t);
-                            } else {
-                                ArrayList<Tratamiento> tratamientos = new ArrayList<>();
-                                tratamientos.add(t);
-                                map.put(p, tratamientos);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return map;
     }
 }
