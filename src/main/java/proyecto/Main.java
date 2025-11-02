@@ -2,6 +2,7 @@ package proyecto;
 
 import java.time.LocalTime;
 
+import java.util.List;
 import proyecto.models.HorarioAtencion;
 import proyecto.models.Hospital;
 import proyecto.utilities.Validaciones;
@@ -76,9 +77,9 @@ public class Main {
         String nombre = Validaciones.validarString("Nombre: ");
         String apellido = Validaciones.validarString("Apellido: ");
         String correo = Validaciones.validarCorreo("Correo: ");
-        String telefono = Validaciones.validarString("Telefono: ");
+        String cedula = Validaciones.validarString("Cédula: ");
         int tipoSeguro = Validaciones.validarEntero("Tipo de Seguro (1. IESS. 2. PRIVADO): ");
-        boolean resultado = hp.guardarPaciente(nombre, apellido, correo, telefono, tipoSeguro);
+        boolean resultado = hp.guardarPaciente(nombre, apellido, correo, cedula, tipoSeguro);
         if(resultado) {
             System.out.println("\nPaciente registrado exitosamente. \n");
         } else {
@@ -91,7 +92,7 @@ public class Main {
         String nombre = Validaciones.validarString("Nombre: ");
         String apellido = Validaciones.validarString("Apellido: ");
         String correo = Validaciones.validarCorreo("Correo: ");
-        String telefono = Validaciones.validarString("Telefono: ");
+        String cedula = Validaciones.validarString("Cédula: ");
         String genero = Validaciones.validarString("Género: ");
         String especialidad = Validaciones.validarString("Especialidad: ");
         System.out.println("-----Horarios de Atención");
@@ -100,7 +101,7 @@ public class Main {
         LocalTime horaFin = Validaciones.validarHora("Ingrese hasta que hora atiende (HH:mm): ");
         HorarioAtencion horario = hp.crearHorario(dias, horaInicio, horaFin);
         boolean activo = Validaciones.validarSiNo("¿Está activo? (si/no): ");
-        boolean resultado = hp.guardarMedico(nombre, apellido, correo, telefono, genero, especialidad, activo, horario);
+        boolean resultado = hp.guardarMedico(nombre, apellido, correo, cedula, genero, especialidad, activo, horario);
         if(resultado) {
             System.out.println("\nMédico registrado exitosamente. \n");
         } else {
@@ -195,7 +196,14 @@ public class Main {
     private static void editarCitaMedica(Hospital hp) {
         System.out.println("----Modificar o Cancelar Cita Médica----");
         String correoPaciente = confirmarPaciente(hp);
-        hp.obtenerCitasPorPaciente(correoPaciente);
+        List<String> citasPaciente = hp.obtenerCitasPorPaciente(correoPaciente);
+        if(citasPaciente.isEmpty()) {
+            System.out.println("El paciente no tiene citas registradas.");
+            return;
+        }
+        for(String cita : citasPaciente) {
+            System.out.println(cita);
+        }
         int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea modificar o cancelar: ");
         String opcion = Validaciones.validarString("Que desea hacer? \n1. Modificar Cita. \n2. Cancelar Cita. \n");
         switch(opcion) {
@@ -237,7 +245,14 @@ public class Main {
     private static void citaAtendida(Hospital hp) {
         System.out.println("----Marcar Cita como Atendida----");
         String correoPaciente = confirmarPaciente(hp);
-        hp.obtenerCitasPorPaciente(correoPaciente);
+        List<String> citasPaciente = hp.obtenerCitasPorPaciente(correoPaciente);
+        if(citasPaciente.isEmpty()) {
+            System.out.println("El paciente no tiene citas registradas.");
+            return;
+        }
+        for(String cita : citasPaciente) {
+            System.out.println(cita);
+        }
         int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea marcar como atendida: ");
         boolean resultado = hp.marcarCitaAtendida(idCita);
         if(resultado) {

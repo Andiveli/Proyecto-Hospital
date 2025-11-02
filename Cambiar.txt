@@ -1,4 +1,0 @@
-1. Cambiar los tipos de seguros
-2. Agregar especialidades constantes de los medicos (?)
-3. Agregar los horario de atención de los medicos
-4. Cambiar genero a atributo de persona, y hacerlo constantes

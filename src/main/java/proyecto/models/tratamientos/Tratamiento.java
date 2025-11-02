@@ -1,6 +1,7 @@
 package proyecto.models.tratamientos;
+import proyecto.interfaces.Pagable;
 
-public abstract class Tratamiento {
+public abstract class Tratamiento implements Pagable{
     private static final double COSTO_BASE = 50.0;
     private String nombre;
     private int duracion;
@@ -10,7 +11,7 @@ public abstract class Tratamiento {
         this.nombre = nombre;
         this.duracion = duracion;
         this.precio = precio;
-    }
+    }   
 
     public static double getCostoBase() {
         return COSTO_BASE;

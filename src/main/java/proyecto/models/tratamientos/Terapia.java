@@ -1,14 +1,18 @@
 package proyecto.models.tratamientos;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
-public class Terapia extends Tratamiento  {
+public class Terapia extends Tratamiento {
     public Terapia(String nombre, int duracion, double precio) {
         super(nombre, duracion, precio);
+    }
+
+    @Override
+    public double pagar() {
+        return calcularCosto();
     }
 
     @Override

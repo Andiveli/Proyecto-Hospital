@@ -1,2 +1,2 @@
-Id: 1, Día: FRIDAY, Hora: 14:00, Paciente: juan@correo.com, Médico: carlos@correo.com, Estado: ATENDIDA
-Id: 2, Día: MONDAY, Hora: 14:00, Paciente: juan@correo.com, Médico: carlos@correo.com, Estado: PROGRAMADA
+Id: 1, Día: WEDNESDAY, Hora: 17:00, Paciente: juan@correo.com, Médico: ana@correo.com, Estado: CANCELADA
+Id: 2, Día: MONDAY, Hora: 14:00, Paciente: juan@correo.com, Médico: ana@correo.com, Estado: ATENDIDA

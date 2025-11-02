@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -37,7 +38,7 @@ public class Hospital {
         this.listaTratamientos.addAll(Medicacion.cargarTodas());
         this.listaTratamientos.addAll(Terapia.cargarTodas());
         this.listaTratamientos.addAll(Cirugia.cargarTodas());
-        this.listaTratamientosPorPaciente = new HashMap<>();
+        this.listaTratamientosPorPaciente = cargarTratamientosPorPaciente();
         this.listaFacturas = new HashMap<>();
     }
 
@@ -189,15 +190,20 @@ public class Hospital {
                         String horaStr = partes[1].trim();
                         DayOfWeek dia = DayOfWeek.valueOf(Validaciones.convertirIngles(diaStr));
                         LocalTime hora = LocalTime.parse(horaStr);
-                        boolean registrado = m.getHorarioAtencion().registrarCita(dia, hora);
-                        if(registrado) {
-                            int idCita = listaCitas.size() + 1;
-                            Cita nuevaCita = new Cita(idCita, hora, dia, p.getCorreo(), m.getCorreo());
-                            nuevaCita.guardar();
-                            guardarMedicos();
-                            listaCitas.add(nuevaCita);
-                            return true;
+                        if(m.isDisponible(hora, dia)) {
+                            boolean registrado = m.getHorarioAtencion().registrarCita(dia, hora);
+                            if(registrado) {
+                                int idCita = listaCitas.size() + 1;
+                                Cita nuevaCita = new Cita(idCita, hora, dia, p.getCorreo(), m.getCorreo());
+                                nuevaCita.guardar();
+                                guardarMedicos();
+                                listaCitas.add(nuevaCita);
+                                return true;
+                            } else {
+                                return false;
+                            }
                         } else {
+                            System.out.println("El médico no está disponible.");
                             return false;
                         }
                     }
@@ -208,13 +214,14 @@ public class Hospital {
         return false;
     }
     
-    public void obtenerCitasPorPaciente(String correoPaciente) {
-        System.out.println("Citas médicas del paciente con correo " + correoPaciente + ":");
+    public List<String> obtenerCitasPorPaciente(String correoPaciente) {
+        List<String> citasPaciente = new ArrayList<>();
         for(Cita c: listaCitas) {
-            if(c.getPaciente().equalsIgnoreCase(correoPaciente)) {
-                System.out.println(c);
+            if(c.getPaciente().equalsIgnoreCase(correoPaciente) && c.getEstadoCita() == EstadoCita.PROGRAMADA) {
+                citasPaciente.add(c.toString());
             }
         }
+        return citasPaciente;
     }
 
     public boolean modificarCitaMedica(int idCita, String nuevoDiaHora) {
@@ -227,6 +234,15 @@ public class Hospital {
                 String horaStr = partes[1].trim();
                 DayOfWeek nuevoDia = DayOfWeek.valueOf(Validaciones.convertirIngles(diaStr));
                 LocalTime nuevaHora = LocalTime.parse(horaStr);
+                for(Medico m: listaMedicos) {
+                    if(m.getCorreo().equalsIgnoreCase(c.getMedico())) {
+                        if(!m.isDisponible(nuevaHora, nuevoDia)) {
+                            System.out.println("El médico no está disponible en el nuevo horario.");
+                            return false;
+                        }
+                    }
+                }
+                
                 boolean registrado = false;
                 for(Medico m: listaMedicos) {
                     if(m.getCorreo().equalsIgnoreCase(c.getMedico())) {
@@ -300,6 +316,10 @@ public class Hospital {
     public boolean marcarCitaAtendida(int idCita) {
         for(Cita c: listaCitas) {
             if(c.getIdCita() == idCita) {
+                if(c.getEstadoCita() != EstadoCita.PROGRAMADA) {
+                    System.out.println("La cita no está en estado programada.");
+                    return false;
+                }
                 c.setEstadoCita(EstadoCita.ATENDIDA);
                 for(Medico m: listaMedicos) {
                     if(m.getCorreo().equalsIgnoreCase(c.getMedico())) {
@@ -384,6 +404,8 @@ public class Hospital {
     private void agregarTratamientoPaciente(Paciente paciente, Tratamiento tratamiento) {
         if(listaTratamientosPorPaciente.containsKey(paciente)) {
             listaTratamientosPorPaciente.get(paciente).add(tratamiento);
+            Factura factura = new Factura(listaFacturas.size() + 1, paciente.getNombre(), tratamiento.getNombre(), tratamiento.pagar(), LocalDateTime.now());
+            factura.guardar();
         } else {
             ArrayList<Tratamiento> tratamientos = new ArrayList<>();
             tratamientos.add(tratamiento);
@@ -410,8 +432,8 @@ public class Hospital {
     public void listarHistorialTratamientos(String correoPaciente) {
         for(Paciente p: listaPacientes) {
             if(p.getCorreo().equalsIgnoreCase(correoPaciente)) {
-                System.out.println("Historial de tratamientos del paciente " + p.getNombre() + ":");
                 if(listaTratamientosPorPaciente.containsKey(p)) {
+                    System.out.println("Historial de tratamientos del paciente " + p.getNombre() + ":");
                     for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
                         System.out.println(t);
                     }
@@ -428,7 +450,7 @@ public class Hospital {
         double totalIngresos = 0.0;
         for(Paciente p: listaTratamientosPorPaciente.keySet()) {
             for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
-                totalIngresos += t.calcularCosto();
+                totalIngresos += t.pagar();
             }
         }
         System.out.println("Ingresos totales por tratamientos: $" + totalIngresos);
@@ -439,10 +461,33 @@ public class Hospital {
         for(Paciente p: listaTratamientosPorPaciente.keySet()) {
             for(Tratamiento t: listaTratamientosPorPaciente.get(p)) {
                 if(t.getTipo().equalsIgnoreCase(tipoTratamiento)) {
-                    totalIngresos += t.calcularCosto();
+                    totalIngresos += t.pagar();
                 }
             }
         }
         System.out.println("Ingresos totales por tratamientos de tipo " + tipoTratamiento + ": $" + totalIngresos);
+    }
+
+    private HashMap<Paciente, ArrayList<Tratamiento>> cargarTratamientosPorPaciente() {
+        ArrayList<Factura> facturas = Factura.cargarTodas();
+        HashMap<Paciente, ArrayList<Tratamiento>> map = new HashMap<>();
+        for(Factura f: facturas) {
+            for(Paciente p: listaPacientes) {
+                if(p.getNombre().equalsIgnoreCase(f.getPaciente())) {
+                    for(Tratamiento t: listaTratamientos) {
+                        if(f.getTratamientos().equalsIgnoreCase(t.getNombre())) {
+                            if(map.containsKey(p)) {
+                                map.get(p).add(t);
+                            } else {
+                                ArrayList<Tratamiento> tratamientos = new ArrayList<>();
+                                tratamientos.add(t);
+                                map.put(p, tratamientos);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return map;
     }
 }

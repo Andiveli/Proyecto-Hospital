@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+
 import proyecto.enums.EstadoCita;
 
 public class Cita {
@@ -41,11 +42,14 @@ public class Cita {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(", ");
-                DayOfWeek diaT = DayOfWeek.valueOf(partes[0].split(": ")[1]);
-                LocalTime horaT = LocalTime.parse(partes[1].split(": ")[1]);
-                String correoPaciente = partes[2].split(": ")[1];
-                String correoMedico = partes[3].split(": ")[1];
+                DayOfWeek diaT = DayOfWeek.valueOf(partes[1].split(": ")[1]);
+                LocalTime horaT = LocalTime.parse(partes[2].split(": ")[1]);
+                String correoPaciente = partes[3].split(": ")[1];
+                String correoMedico = partes[4].split(": ")[1];
+                String estadoStr = partes[5].split(": ")[1];
+                EstadoCita estado = EstadoCita.valueOf(estadoStr);
                 Cita cita = new Cita(citas.size() + 1, horaT, diaT, correoPaciente, correoMedico);
+                cita.setEstadoCita(estado);
                 citas.add(cita);
             }
         } catch (Exception e) {

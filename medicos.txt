@@ -1,1 +1,2 @@
-Nombre: carlos ruiz, Cedula: 3, Género: masculino, Especialidad: cardiología, Correo: carlos@correo.com, Activo: Sí, Horario: 14:00-18:00;60;MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY;MONDAY:14:00|TUESDAY:|WEDNESDAY:|THURSDAY:|FRIDAY:
+Nombre: carlos ruiz, Cedula: 3, Género: masculino, Especialidad: cardiología, Correo: carlos@correo.com, Activo: Sí, Horario: 08:00-12:00;60;MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY;MONDAY:|TUESDAY:|WEDNESDAY:|THURSDAY:|FRIDAY:
+Nombre: ana mora, Cedula: 4, Género: femenino, Especialidad: pediatría, Correo: ana@correo.com, Activo: Sí, Horario: 14:00-18:00;60;MONDAY,TUESDAY,WEDNESDAY;MONDAY:|TUESDAY:|WEDNESDAY:

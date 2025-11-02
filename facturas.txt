@@ -1,0 +1,5 @@
+Factura ID: 1
+, Paciente: juan
+, Total: $57.5
+, Fecha: 2025-11-02T14:36:34.163410312
+, Tratamientos: fisica

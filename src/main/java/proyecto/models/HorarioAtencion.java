@@ -32,6 +32,14 @@ public class HorarioAtencion {
         }
     }
 
+    public boolean estaDisponible(DayOfWeek dia, LocalTime hora) {
+        if (!dias.contains(dia)) return false;
+        if (hora.isBefore(horaInicio) || hora.plusMinutes(duracionCita).isAfter(horaFin)) return false;
+
+        Set<LocalTime> ocupadas = horasOcupadasPorDia.get(dia);
+        return !ocupadas.contains(hora);
+    }
+
     public boolean registrarCita(DayOfWeek dia, LocalTime hora) {
         if (!dias.contains(dia)) return false;
         if (hora.isBefore(horaInicio) || hora.plusMinutes(duracionCita).isAfter(horaFin)) return false;
@@ -76,7 +84,7 @@ public class HorarioAtencion {
         return sb.toString();
     }
 
-    public String toDataString() {
+    public String convertirString() {
         StringBuilder sb = new StringBuilder();
 
         // Formato base: horaInicio-horaFin;duracion;DIA1,DIA2,...;DIA1:HH:mm,HH:mm|DIA2:HH:mm,...
@@ -101,7 +109,7 @@ public class HorarioAtencion {
         return sb.toString();
     }
 
-    public static HorarioAtencion fromDataString(String data) {
+    public static HorarioAtencion convertirDatos(String data) {
         String[] partes = data.split(";");
         String[] horas = partes[0].split("-");
         LocalTime inicio = LocalTime.parse(horas[0]);
@@ -124,13 +132,19 @@ public class HorarioAtencion {
         if (partes.length > 3 && !partes[3].isEmpty()) {
             String[] bloques = partes[3].split("\\|");
             for (String bloque : bloques) {
-                String[] diaYHoras = bloque.split(":");
-                DayOfWeek dia = DayOfWeek.valueOf(diaYHoras[0]);
-                if (diaYHoras.length > 1 && !diaYHoras[1].isEmpty()) {
-                    Set<LocalTime> horasOcupadas = Arrays.stream(diaYHoras[1].split(","))
-                        .map(LocalTime::parse)
-                        .collect(Collectors.toSet());
-                    horario.horasOcupadasPorDia.put(dia, horasOcupadas);
+                int idx = bloque.indexOf(':');
+                if (idx > 0) {
+                    DayOfWeek dia = DayOfWeek.valueOf(bloque.substring(0, idx));
+                    String horasStr = bloque.substring(idx + 1);
+
+                    if (!horasStr.isEmpty()) {
+                        Set<LocalTime> horasOcupadas = Arrays.stream(horasStr.split(","))
+                            .map(LocalTime::parse)
+                            .collect(Collectors.toSet());
+                        horario.horasOcupadasPorDia.put(dia, horasOcupadas);
+                    } else {
+                        horario.horasOcupadasPorDia.put(dia, new HashSet<>());
+                    }
                 }
             }
         }

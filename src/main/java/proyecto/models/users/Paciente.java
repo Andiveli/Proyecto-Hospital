@@ -33,7 +33,7 @@ public class Paciente extends Persona {
 
     @Override
     public String toString() {
-        return "Nombre: " + getNombre() + " " + getApellido() + ", Correo: " + getCorreo() + ", Tipo de Seguro: " + tipoSeguro;
+        return "Nombre: " + getNombre() + " " + getApellido() + ", Cédula: " + getCedulaString() + ", Correo: " + getCorreo() + ", Tipo de Seguro: " + tipoSeguro;
     }
 
     @Override
@@ -57,12 +57,12 @@ public class Paciente extends Persona {
                 String[] nombres = nombreCompleto.split(" ");
                 String nombre = nombres[0];
                 String apellido = nombres[1];
-                String telefono = partes[1].split(": ")[1];
+                String cedula = partes[1].split(": ")[1];
                 String correo = partes[2].split(": ")[1];
                 String tipoSeguroStr = partes[3].split(": ")[1];
                 TipoSeguro tipoSeguroPaciente = TipoSeguro.valueOf(tipoSeguroStr);
 
-                Paciente paciente = new Paciente(pacientes.size() + 1, nombre, apellido, correo, telefono, tipoSeguroPaciente);
+                Paciente paciente = new Paciente(pacientes.size() + 1, nombre, apellido, correo, cedula, tipoSeguroPaciente);
                 pacientes.add(paciente);
             }
             return pacientes;
