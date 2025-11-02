@@ -404,13 +404,13 @@ public class Hospital {
     private void agregarTratamientoPaciente(Paciente paciente, Tratamiento tratamiento) {
         if(listaTratamientosPorPaciente.containsKey(paciente)) {
             listaTratamientosPorPaciente.get(paciente).add(tratamiento);
-            Factura factura = new Factura(listaFacturas.size() + 1, paciente.getNombre(), tratamiento.getNombre(), tratamiento.pagar(), LocalDateTime.now());
-            factura.guardar();
         } else {
             ArrayList<Tratamiento> tratamientos = new ArrayList<>();
             tratamientos.add(tratamiento);
             listaTratamientosPorPaciente.put(paciente, tratamientos);
         }
+        Factura factura = new Factura(listaFacturas.size() + 1, paciente.getCorreo(), tratamiento.getNombre(), tratamiento.pagar(), LocalDateTime.now());
+        factura.guardar();
     }
 
     public void listarCitasAtendidasPorEspecialidad(String especialidad) {
@@ -473,7 +473,7 @@ public class Hospital {
         HashMap<Paciente, ArrayList<Tratamiento>> map = new HashMap<>();
         for(Factura f: facturas) {
             for(Paciente p: listaPacientes) {
-                if(p.getNombre().equalsIgnoreCase(f.getPaciente())) {
+                if(p.getCorreo().equalsIgnoreCase(f.getPaciente())) {
                     for(Tratamiento t: listaTratamientos) {
                         if(f.getTratamientos().equalsIgnoreCase(t.getNombre())) {
                             if(map.containsKey(p)) {

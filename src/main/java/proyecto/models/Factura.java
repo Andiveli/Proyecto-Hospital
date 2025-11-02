@@ -27,9 +27,13 @@ public class Factura {
         return "Factura ID: " + id + "\n, Paciente: " + paciente + "\n, Total: $" + total + "\n, Fecha: " + fecha + "\n, Tratamientos: " + tratamientos;
     }
 
+    private String convertirString() {
+        return "Factura ID: " + id + ", Paciente: " + paciente + ", Total: $" + total + ", Fecha: " + fecha + ", Tratamientos: " + tratamientos;
+    }
+
     public void guardar() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("facturas.txt", true))) {
-            writer.write(this.toString());
+            writer.write(this.convertirString());
             writer.newLine();
         } catch (Exception e) {
             System.out.println("Error al guardar la factura: " + e.getMessage());
@@ -41,14 +45,14 @@ public class Factura {
         try (BufferedReader reader = new BufferedReader(new FileReader("facturas.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] partes = line.split(", ");
-                int id = Integer.parseInt(partes[0].split(": ")[1]);
-                String paciente = partes[1].split(": ")[1];
-                double total = Double.parseDouble(partes[2].split(": $")[1]);
-                LocalDateTime fecha = LocalDateTime.parse(partes[3].split(": ")[1]);
-                String tratamientos = partes[4].split(": ")[1];
-
-                facturas.add(new Factura(id, paciente, tratamientos, total, fecha));
+                String[] parts = line.split(", ");
+                int id = Integer.parseInt(parts[0].split(": ")[1]);
+                String paciente = parts[1].split(": ")[1];
+                double total = Double.parseDouble(parts[2].split(": \\$")[1]);
+                LocalDateTime fecha = LocalDateTime.parse(parts[3].split(": ")[1]);
+                String tratamientos = parts[4].split(": ")[1];
+                Factura factura = new Factura(id, paciente, tratamientos, total, fecha);
+                facturas.add(factura);
             }
         } catch (Exception e) {
             System.out.println("Error al cargar las facturas: " + e.getMessage());
