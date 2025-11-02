@@ -45,6 +45,7 @@ Actualmente no hay pruebas automatizadas (JUnit), pero puedes verificar manualme
  - Los registros se guardan correctamente en los archivos .txt.
  - Las operaciones de carga y guardado funcionan sin errores.
  - Las clases implementan correctamente las interfaces definidas.
+---
 
 ## 🧱 Estructura de clases (resumen funcional)
 
