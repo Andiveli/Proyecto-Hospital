@@ -35,13 +35,13 @@ public class Main {
                     crearCitaMedica(hp);
                 }
                 case 6 -> {
-                    System.out.println("Modificar o cancelar cita");
+                    editarCitaMedica(hp);
                 }
                 case 7 -> {
-                    System.out.println("Registrar Tratamientos para un paciente");
+                    registrarTratamientos(hp);
                 }
                 case 8 -> {
-                    System.out.println("Marcar cita atendida");
+                    citaAtendida(hp);
                 }
                 case 9 -> {
                     System.out.println("Reporte: citas atendidas por especialidad");
@@ -78,7 +78,6 @@ public class Main {
         String apellido = Validaciones.validarString("Apellido: ");
         String correo = Validaciones.validarCorreo("Correo: ");
         String telefono = Validaciones.validarString("Telefono: ");
-        //Falta agregar el horario de atención
         String genero = Validaciones.validarString("Género: ");
         String especialidad = Validaciones.validarString("Especialidad: ");
         System.out.println("-----Horarios de Atención");
@@ -100,7 +99,7 @@ public class Main {
         int opcion = Validaciones.validarEntero("Listar por: \n1. Tipo de Seguro \n2. Todos. \n");
         switch(opcion) {
             case 1 -> {
-                int tipoSeguro = Validaciones.validarEntero("Ingrese el tipo de seguro: \n1. IESS \n2. PRIVADO.");
+                int tipoSeguro = Validaciones.validarEntero("Ingrese el tipo de seguro: \n1. IESS \n2. PRIVADO. \n");
                 hp.listarPacientes(tipoSeguro);
             }
             case 2 -> {
@@ -129,10 +128,160 @@ public class Main {
             }
         }
     }
+    
     private static void crearCitaMedica(Hospital hp) {
-        String nombrePaciente = Validaciones.validarString("Ingrese el nombre del paciente: ");
-        hp.listarMedicosAll();
-        String nombreMedico = Validaciones.validarString("Ingrese el nombre del medico para listar sus horarios disponibles: ");
-        hp.buscarHorarios(nombreMedico);
+        System.out.println("----Crear Cita Médica----");
+        String paciente = confirmarPaciente(hp);
+        if (paciente == null) return;
+        String medico = confirmarMedico(hp);
+        if (medico == null) return;
+        String cita = Validaciones.validarCita("Ingrese el día y la hora de la cita (dia HH:mm): ");
+        boolean resultado = hp.crearCitaMedica(cita, paciente, medico);
+        if(resultado) {
+            System.out.println("\nCita médica creada exitosamente. \n");
+        } else {
+            System.out.println("\nError al crear la cita médica. \n");
+        }
+    }
+
+    private static String confirmarMedico(Hospital hp) {
+        int n = 0;
+        String correoMedico = Validaciones.validarString("Ingrese el correo del médico: ");
+        while(!hp.medicoExiste(correoMedico) && n < 3) {
+            System.out.println("El médico no está registrado.");
+            correoMedico = Validaciones.validarString("Ingrese el correo del médico: ");
+            n++;
+        }
+        if (n == 3) {
+            System.out.println("Se ha excedido el número de intentos.");
+            return null;
+        }
+        hp.buscarHorarios(correoMedico);
+        return correoMedico;
+    }
+
+    private static String confirmarPaciente(Hospital hp) {
+        int n = 0;
+        String correoPaciente = Validaciones.validarString("Ingrese el correo del paciente: ");
+        while(!hp.pacienteExiste(correoPaciente) && n < 3) {
+            System.out.println("El paciente no está registrado.");
+            correoPaciente = Validaciones.validarString("Ingrese el correo del paciente: ");
+            n++;
+        }
+        if (n == 3) {
+            System.out.println("Se ha excedido el número de intentos.");
+            return null;
+        }
+        return correoPaciente;
+    }
+
+    private static void editarCitaMedica(Hospital hp) {
+        System.out.println("----Modificar o Cancelar Cita Médica----");
+        String correoPaciente = confirmarPaciente(hp);
+        hp.obtenerCitasPorPaciente(correoPaciente);
+        int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea modificar o cancelar: ");
+        String opcion = Validaciones.validarString("Que desea hacer? \n1. Modificar Cita. \n2. Cancelar Cita. \n");
+        switch(opcion) {
+            case "1" -> {
+                modificarCita(hp, idCita);
+            }
+            case "2" -> {
+                cancelarCita(hp, idCita);
+            }
+        }
+    }
+
+    private static void modificarCita(Hospital hp, int idCita) {
+        System.out.println("----Modificar Cita Médica----");
+        String nuevaCita = Validaciones.validarCita("Ingrese el nuevo día y la nueva hora de la cita (dia HH:mm): ");
+        boolean resultado = hp.modificarCitaMedica(idCita, nuevaCita);
+        if(resultado) {
+            System.out.println("\nCita médica modificada exitosamente. \n");
+        } else {
+            System.out.println("\nError al modificar la cita médica. \n");
+        }
+    }
+
+    private static void cancelarCita(Hospital hp, int idCita) {
+        System.out.println("----Cancelar Cita Médica----");
+        boolean confirmar = Validaciones.validarSiNo("¿Está seguro que desea cancelar la cita? (si/no): ");
+        if (!confirmar) {
+            System.out.println("Cancelación de cita médica abortada.");
+            return;
+        }
+        boolean resultado = hp.cancelarCitaMedica(idCita);
+        if(resultado) {
+            System.out.println("\nCita médica cancelada exitosamente. \n");
+        } else {
+            System.out.println("\nError al cancelar la cita médica. \n");
+        }
+    }
+
+    private static void citaAtendida(Hospital hp) {
+        System.out.println("----Marcar Cita como Atendida----");
+        String correoPaciente = confirmarPaciente(hp);
+        hp.obtenerCitasPorPaciente(correoPaciente);
+        int idCita = Validaciones.validarEntero("Ingrese el ID de la cita que desea marcar como atendida: ");
+        boolean resultado = hp.marcarCitaAtendida(idCita);
+        if(resultado) {
+            System.out.println("\nCita médica marcada como atendida exitosamente. \n");
+        } else {
+            System.out.println("\nError al marcar la cita médica como atendida. \n");
+        }
+    }
+    
+    private static void registrarTratamientos(Hospital hp) {
+        System.out.println("----Registrar Tratamientos para un Paciente----");
+        String correoPaciente = confirmarPaciente(hp);
+        int opcion = Validaciones.validarEntero("Que tipo de tratamiento desea registrar? \n1. Medicación. \n2. Terapia. \n3. Cirugía");
+        switch(opcion) {
+            case 1 -> {
+                registrarMedicacion(hp, correoPaciente);
+            }
+            case 2 -> {
+                registrarTerapia(hp, correoPaciente);
+            }
+            case 3 -> {
+                registrarCirugia(hp, correoPaciente);
+            }
+        }
+    }
+
+    private static void registrarMedicacion(Hospital hp, String correoPaciente) {
+        System.out.println("----Registrar Medicación----");
+        String medicamento = Validaciones.validarString("Nombre del medicamento: ");
+        double costo = Validaciones.validarDouble("Costo: ");
+        int duracionDias = Validaciones.validarEntero("Duración en días: ");
+        boolean resultado = hp.registrarMedicacion(correoPaciente, medicamento, duracionDias, costo);
+        if(resultado) {
+            System.out.println("\nMedicacion registrada exitosamente. \n");
+        } else {
+            System.out.println("\nError al registrar la medicación. \n");
+        }
+    }
+
+    private static void registrarTerapia(Hospital hp, String correoPaciente) {
+        System.out.println("----Registrar Terapia----");
+        String tipoTerapia = Validaciones.validarString("Tipo de terapia: ");
+        double costo = Validaciones.validarDouble("Costo: ");
+        int numeroSesiones = Validaciones.validarEntero("Número de sesiones: ");
+        boolean resultado = hp.registrarTerapia(correoPaciente, tipoTerapia, numeroSesiones, costo);
+        if(resultado) {
+            System.out.println("\nTerapia registrada exitosamente. \n");
+        } else {
+            System.out.println("\nError al registrar la terapia. \n");
+        }
+    }
+
+    private static void registrarCirugia(Hospital hp, String correoPaciente) {
+        System.out.println("----Registrar Cirugía----");
+        String tipoCirugia = Validaciones.validarString("Tipo de cirugía: ");
+        double costo = Validaciones.validarDouble("Costo: ");
+        boolean resultado = hp.registrarCirugia(correoPaciente, tipoCirugia, costo);
+        if(resultado) {
+            System.out.println("\nCirugía registrada exitosamente. \n");
+        } else {
+            System.out.println("\nError al registrar la cirugía. \n");
+        }
     }
 }

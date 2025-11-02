@@ -1,10 +1,12 @@
 package proyecto.utilities;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Scanner;
 
 public class Validaciones {
     private static final Scanner sc = new Scanner(System.in);
+    
     public static int validarEntero(String mensaje) {
         System.out.print(mensaje);
         while(!sc.hasNextInt()) {
@@ -12,6 +14,17 @@ public class Validaciones {
             sc.next();
         }
         int respuesta = sc.nextInt();
+        sc.nextLine();
+        return respuesta;
+    }
+
+    public static double validarDouble(String mensaje) {
+        System.out.print(mensaje);
+        while(!sc.hasNextDouble()) {
+            System.out.print("Entrada invalida. \n" + mensaje);
+            sc.next();
+        }
+        double respuesta = sc.nextDouble();
         sc.nextLine();
         return respuesta;
     }
@@ -58,6 +71,41 @@ public class Validaciones {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private static boolean isDia(String respuesta) {
+        try {
+            DayOfWeek.valueOf(convertirIngles(respuesta.toLowerCase()));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String convertirIngles(String dia) {
+        return switch(dia) {
+            case "lunes" -> "MONDAY";
+            case "martes" -> "TUESDAY";
+            case "miercoles" -> "WEDNESDAY";
+            case "jueves" -> "THURSDAY";
+            case "viernes" -> "FRIDAY";
+            case "sabado" -> "SATURDAY";
+            case "domingo" -> "SUNDAY";
+            default -> "";
+        };
+    }
+
+    public static String validarCita(String mensaje) {
+        System.out.print(mensaje);
+        String respuesta = sc.nextLine();
+
+        String[] partes = respuesta.split(" ");
+        while(partes.length != 2 || !isDia(partes[0]) || !isHora(partes[1])) {
+            System.out.print("Entrada invalida. \n" + mensaje);
+            respuesta = sc.nextLine();
+            partes = respuesta.split(" ");
+        }
+        return respuesta;
     }
 
 

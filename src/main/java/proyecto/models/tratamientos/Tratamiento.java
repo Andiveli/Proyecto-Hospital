@@ -1,6 +1,7 @@
 package proyecto.models.tratamientos;
 
-public class Tratamiento {
+public abstract class Tratamiento {
+    private static final double COSTO_BASE = 50.0;
     private String nombre;
     private int duracion;
     private double precio;
@@ -11,36 +12,27 @@ public class Tratamiento {
         this.precio = precio;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public int getDuracion() {
-        return duracion;
-    }
-
-    public void setDuracion(int duracion) {
-        this.duracion = duracion;
+    public static double getCostoBase() {
+        return COSTO_BASE;
     }
 
     public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public String getNombre() {
+        return nombre;
     }
 
-    public double calcularCosto() {
-        return precio * duracion;
+    public int getDuracion() {
+        return duracion;
     }
 
     @Override
     public String toString() {
         return "Tratamiento: " + nombre + ", Duración: " + duracion + " hora(s), Precio por hora: $" + precio;
     }
+
+    public abstract double calcularCosto();
 }
 

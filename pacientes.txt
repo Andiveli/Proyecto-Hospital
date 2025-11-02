@@ -1,0 +1,2 @@
+Nombre: juan perez, Correo: juan@correo.com, Tipo de Seguro: IESS
+Nombre: maria lopez, Correo: maria@correo.com, Tipo de Seguro: PRIVADO

@@ -1,18 +1,23 @@
 package proyecto.models.users;
 
-public class Persona {
+import java.util.ArrayList;
+
+public abstract class Persona {
     private int id;
     private String nombre;
     private String apellido;
     private String correo;
-    private String telefono;
+    private String cedulaString;
 
-    public Persona(int id, String nombre, String apellido, String correo, String telefono) {
+    public Persona(int id, String nombre, String apellido, String correo, String cedulaString) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
-        this.telefono = telefono;
+        this.cedulaString = cedulaString;
+    }
+    public String getCedulaString() {
+        return cedulaString;
     }
 
     public int getId() {
@@ -27,14 +32,6 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
     public String getApellido() {
         return apellido;
     }
@@ -43,4 +40,5 @@ public class Persona {
         return correo;
     }
 
+    public abstract void guardar();
 }
